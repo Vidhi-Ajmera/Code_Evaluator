@@ -1,0 +1,8 @@
+{
+  "dependencies": {
+    "dotenv": "^16.4.7",
+    "fastapi": "^0.0.8",
+    "motor": "^0.1.4",
+    "openai": "^4.86.2"
+  }
+}
