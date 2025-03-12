@@ -18,16 +18,18 @@ body.dark-theme {
 }
 
 .container {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  flex-grow: 1;  /* Helps expand content */
   width: 100%;
   max-width: 1200px;
   min-height: 100vh;
   margin: auto;
   padding: 2rem;
-  display: flex;
-  flex-direction: column;
-  align-items: center;
   gap: 2rem;
 }
+
 
 .title {
   font-size: 2rem;
@@ -47,10 +49,11 @@ body.dark-theme {
 .title:hover {
   transform: scale(1.05);
 }
-
 .editor-container {
   width: 100%;
-  height: 60vh;
+  min-height: 60vh; /* Changed from fixed height to min-height */
+  height: 100%;      /* Ensures it adapts to available space */
+  flex-grow: 1;      /* Allows it to expand in flexible layouts */
   border: 1px solid #e5e7eb;
   border-radius: 12px;
   overflow: hidden;
@@ -62,6 +65,7 @@ body.dark-theme {
   border-color: #374151;
   background-color: #2d2d2d;
 }
+
 
 /* CodeMirror Editor Styles */
 .cm-editor {
@@ -199,4 +203,62 @@ body.dark-theme {
 
 .logout-button-main:hover {
   background-color: #dc2626;
+}
+/* Sidebar Theme Fix */
+.sidebar {
+  background-color: #ffffff; /* Light mode sidebar color */
+  transition: background-color 0.3s ease;
+}
+
+.dark-theme .sidebar {
+  background-color: #000000; /* Dark mode sidebar color */
+}
+
+/* Button Container with Spacing */
+.button-container {
+  display: flex;
+  gap: 1.5rem; /* Increased spacing for better visual balance */
+  margin-top: 1rem;
+}
+
+.dark-theme .button-container {
+  gap: 1rem; /* Consistent spacing for dark mode */
+}
+
+/* Reset Button */
+.reset-button,
+.analyze-button {
+  padding: 0.75rem 1.5rem;
+  border: none;
+  border-radius: 8px;
+  font-size: 1rem;
+  font-weight: 600;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  transition: background-color 0.3s ease;
+}
+
+.reset-button {
+  background-color: #ef4444;
+  color: #ffffff;
+}
+
+.reset-button:hover {
+  background-color: #dc2626;
+}
+
+.analyze-button {
+  background-color: #3b82f6;
+  color: #ffffff;
+}
+
+.analyze-button:hover {
+  background-color: #2563eb;
+}
+
+.analyze-button:disabled {
+  background-color: #9ca3af;
+  cursor: not-allowed;
 }

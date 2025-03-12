@@ -42,7 +42,7 @@ import {
   PointElement,
   LineElement,
 } from "chart.js";
-import { Pie, Bar, Radar } from "react-chartjs-2";
+import { Pie, Radar } from "react-chartjs-2"; // Removed Bar
 
 import {
   FaCode,
@@ -108,6 +108,7 @@ const CodeEvaluator = () => {
   const [alertSeverity, setAlertSeverity] = useState("info");
   const [logoutDialogOpen, setLogoutDialogOpen] = useState(false);
   const reportRef = useRef(null);
+  // const editorRef = useRef(null); // Removed unused editorRef
 
   // Check for token on component mount
   useEffect(() => {
@@ -203,6 +204,7 @@ const CodeEvaluator = () => {
     window.scrollTo({ top: 0, behavior: "smooth" });
   };
 
+  
   useEffect(() => {
     if (analysisResult && reportRef.current) {
       reportRef.current.scrollIntoView({ behavior: "smooth", block: "start" });
@@ -281,11 +283,11 @@ const CodeEvaluator = () => {
     const { code_readability } = analysisResult.evaluation_metrics;
 
     // Set colors based on dark mode
-    const borderColor = darkMode ? "rgb(56, 189, 248)" : "rgb(54, 162, 235)";
+    const borderColor = darkMode ? "rgb(96, 165, 250)" : "rgb(59, 130, 246)";
     const backgroundColor = darkMode
-      ? "rgba(56, 189, 248, 0.2)"
-      : "rgba(54, 162, 235, 0.2)";
-    const pointBgColor = darkMode ? "rgb(56, 189, 248)" : "rgb(54, 162, 235)";
+      ? "rgba(96, 165, 250, 0.2)"
+      : "rgba(59, 130, 246, 0.2)";
+    const pointBgColor = darkMode ? "rgb(96, 165, 250)" : "rgb(59, 130, 246)";
 
     const radarData = {
       labels: ["Readability", "Maintainability", "Efficiency", "Security"],
@@ -307,8 +309,8 @@ const CodeEvaluator = () => {
           backgroundColor: backgroundColor,
           borderColor: borderColor,
           pointBackgroundColor: pointBgColor,
-          pointBorderColor: darkMode ? "#333" : "#fff",
-          pointHoverBackgroundColor: darkMode ? "#333" : "#fff",
+          pointBorderColor: darkMode ? "#1a1a1a" : "#fff",
+          pointHoverBackgroundColor: darkMode ? "#1a1a1a" : "#fff",
           pointHoverBorderColor: borderColor,
         },
       ],
@@ -322,12 +324,12 @@ const CodeEvaluator = () => {
 
     // Adapt colors for dark mode
     const originalColor = darkMode
-      ? ["rgba(45, 212, 191, 0.6)", "rgba(45, 212, 191, 1)"]
-      : ["rgba(75, 192, 192, 0.6)", "rgba(75, 192, 192, 1)"];
+      ? ["rgba(52, 211, 153, 0.6)", "rgba(52, 211, 153, 1)"]
+      : ["rgba(16, 185, 129, 0.6)", "rgba(16, 185, 129, 1)"];
 
     const plagiarismColor = darkMode
       ? ["rgba(248, 113, 113, 0.6)", "rgba(248, 113, 113, 1)"]
-      : ["rgba(255, 99, 132, 0.6)", "rgba(255, 99, 132, 1)"];
+      : ["rgba(239, 68, 68, 0.6)", "rgba(239, 68, 68, 1)"];
 
     const pieData = {
       labels: ["Original Code", "Potential Plagiarism"],
@@ -381,7 +383,17 @@ const CodeEvaluator = () => {
         legend: {
           labels: {
             color: darkMode ? "#f3f4f6" : "#111827",
+            font: {
+              family: "'Inter', sans-serif",
+            },
           },
+        },
+        tooltip: {
+          backgroundColor: darkMode ? "#374151" : "#ffffff",
+          titleColor: darkMode ? "#f3f4f6" : "#111827",
+          bodyColor: darkMode ? "#f3f4f6" : "#111827",
+          borderColor: darkMode ? "#6b7280" : "#e5e7eb",
+          borderWidth: 1,
         },
       },
     };
@@ -394,9 +406,12 @@ const CodeEvaluator = () => {
               className="dashboard-card"
               sx={{
                 height: "100%",
-                backgroundColor: darkMode ? "#2d2d2d" : "white",
+                backgroundColor: darkMode ? "#1f2937" : "white",
                 color: darkMode ? "#f3f4f6" : "#111827",
                 borderColor: darkMode ? "#374151" : "#e5e7eb",
+                boxShadow: darkMode
+                  ? "0 4px 6px rgba(0, 0, 0, 0.2)"
+                  : "0 4px 6px rgba(0, 0, 0, 0.1)",
               }}
             >
               <CardHeader
@@ -404,6 +419,7 @@ const CodeEvaluator = () => {
                 titleTypographyProps={{
                   variant: "h6",
                   color: darkMode ? "#f3f4f6" : "inherit",
+                  fontWeight: 600,
                 }}
               />
               <CardContent>
@@ -413,6 +429,7 @@ const CodeEvaluator = () => {
                       <Typography
                         variant="body1"
                         color={darkMode ? "#f3f4f6" : "inherit"}
+                        sx={{ mb: 1 }}
                       >
                         <strong>Plagiarism Detected:</strong>{" "}
                         {analysisResult.plagiarism_detected ? (
@@ -429,7 +446,10 @@ const CodeEvaluator = () => {
                           </span>
                         )}
                       </Typography>
-                      <Typography color={darkMode ? "#f3f4f6" : "inherit"}>
+                      <Typography
+                        color={darkMode ? "#f3f4f6" : "inherit"}
+                        sx={{ mb: 1 }}
+                      >
                         <strong>Confidence Score:</strong>{" "}
                         {analysisResult.confidence_score}%
                       </Typography>
@@ -440,7 +460,9 @@ const CodeEvaluator = () => {
                     </Box>
                   </Grid>
                   <Grid item xs={12} md={6}>
-                    {pieData && <Pie data={pieData} options={chartOptions} />}
+                    <Box sx={{ height: 200 }}>
+                      {pieData && <Pie data={pieData} options={chartOptions} />}
+                    </Box>
                   </Grid>
                 </Grid>
               </CardContent>
@@ -452,9 +474,12 @@ const CodeEvaluator = () => {
               className="dashboard-card"
               sx={{
                 height: "100%",
-                backgroundColor: darkMode ? "#2d2d2d" : "white",
+                backgroundColor: darkMode ? "#1f2937" : "white",
                 color: darkMode ? "#f3f4f6" : "#111827",
                 borderColor: darkMode ? "#374151" : "#e5e7eb",
+                boxShadow: darkMode
+                  ? "0 4px 6px rgba(0, 0, 0, 0.2)"
+                  : "0 4px 6px rgba(0, 0, 0, 0.1)",
               }}
             >
               <CardHeader
@@ -462,6 +487,7 @@ const CodeEvaluator = () => {
                 titleTypographyProps={{
                   variant: "h6",
                   color: darkMode ? "#f3f4f6" : "inherit",
+                  fontWeight: 600,
                 }}
               />
               <CardContent>
@@ -482,9 +508,12 @@ const CodeEvaluator = () => {
             <Card
               className="dashboard-card"
               sx={{
-                backgroundColor: darkMode ? "#2d2d2d" : "white",
+                backgroundColor: darkMode ? "#1f2937" : "white",
                 color: darkMode ? "#f3f4f6" : "#111827",
                 borderColor: darkMode ? "#374151" : "#e5e7eb",
+                boxShadow: darkMode
+                  ? "0 4px 6px rgba(0, 0, 0, 0.2)"
+                  : "0 4px 6px rgba(0, 0, 0, 0.1)",
               }}
             >
               <CardHeader
@@ -492,6 +521,7 @@ const CodeEvaluator = () => {
                 titleTypographyProps={{
                   variant: "h6",
                   color: darkMode ? "#f3f4f6" : "inherit",
+                  fontWeight: 600,
                 }}
               />
               <CardContent>
@@ -508,9 +538,12 @@ const CodeEvaluator = () => {
                 <Card
                   className="dashboard-card"
                   sx={{
-                    backgroundColor: darkMode ? "#2d2d2d" : "white",
+                    backgroundColor: darkMode ? "#1f2937" : "white",
                     color: darkMode ? "#f3f4f6" : "#111827",
                     borderColor: darkMode ? "#374151" : "#e5e7eb",
+                    boxShadow: darkMode
+                      ? "0 4px 6px rgba(0, 0, 0, 0.2)"
+                      : "0 4px 6px rgba(0, 0, 0, 0.1)",
                   }}
                 >
                   <CardHeader
@@ -518,6 +551,7 @@ const CodeEvaluator = () => {
                     titleTypographyProps={{
                       variant: "h6",
                       color: darkMode ? "#f3f4f6" : "inherit",
+                      fontWeight: 600,
                     }}
                     avatar={
                       <FaExclamationTriangle
@@ -553,17 +587,32 @@ const CodeEvaluator = () => {
                               >
                                 Element {index + 1}
                               </Typography>
-                              <pre className={darkMode ? "dark-pre" : ""}>
-                                {element.code_section}
-                              </pre>
+                              <Box
+                                sx={{
+                                  backgroundColor: darkMode
+                                    ? "#1f2937"
+                                    : "#f9fafb",
+                                  p: 1,
+                                  borderRadius: 1,
+                                  mb: 1,
+                                  maxHeight: "150px",
+                                  overflow: "auto",
+                                }}
+                              >
+                                <pre className={darkMode ? "dark-pre" : ""}>
+                                  {element.code_section}
+                                </pre>
+                              </Box>
                               <Typography
                                 color={darkMode ? "#f3f4f6" : "inherit"}
+                                sx={{ mb: 1 }}
                               >
                                 <strong>Likely Source:</strong>{" "}
                                 {element.likely_source}
                               </Typography>
                               <Typography
                                 color={darkMode ? "#f3f4f6" : "inherit"}
+                                sx={{ mb: 1 }}
                               >
                                 <strong>Confidence:</strong>{" "}
                                 {element.confidence}%
@@ -589,9 +638,12 @@ const CodeEvaluator = () => {
               <Card
                 className="dashboard-card"
                 sx={{
-                  backgroundColor: darkMode ? "#2d2d2d" : "white",
+                  backgroundColor: darkMode ? "#1f2937" : "white",
                   color: darkMode ? "#f3f4f6" : "#111827",
                   borderColor: darkMode ? "#374151" : "#e5e7eb",
+                  boxShadow: darkMode
+                    ? "0 4px 6px rgba(0, 0, 0, 0.2)"
+                    : "0 4px 6px rgba(0, 0, 0, 0.1)",
                 }}
               >
                 <CardHeader
@@ -599,6 +651,7 @@ const CodeEvaluator = () => {
                   titleTypographyProps={{
                     variant: "h6",
                     color: darkMode ? "#f3f4f6" : "inherit",
+                    fontWeight: 600,
                   }}
                   avatar={
                     <FaChartPie color={darkMode ? "#60a5fa" : "#3b82f6"} />
@@ -644,6 +697,7 @@ const CodeEvaluator = () => {
                                 : darkMode
                                 ? "#f87171"
                                 : "#dc2626",
+                            fontWeight: 600,
                           }}
                         >
                           <strong>Status:</strong>{" "}
@@ -717,7 +771,10 @@ const CodeEvaluator = () => {
                           .issues_found.length > 0 ? (
                           <>
                             <Typography
-                              sx={{ color: darkMode ? "#f87171" : "#dc2626" }}
+                              sx={{
+                                color: darkMode ? "#f87171" : "#dc2626",
+                                mb: 1,
+                              }}
                             >
                               <strong>
                                 Issues Found:{" "}
@@ -727,17 +784,26 @@ const CodeEvaluator = () => {
                                 }
                               </strong>
                             </Typography>
-                            <ul
-                              style={{
-                                color: darkMode ? "#f3f4f6" : "inherit",
+                            <Box
+                              sx={{
+                                maxHeight: "150px",
+                                overflow: "auto",
+                                pr: 1,
                               }}
                             >
-                              {analysisResult.evaluation_metrics.code_security.issues_found.map(
-                                (issue, i) => (
-                                  <li key={i}>{issue}</li>
-                                )
-                              )}
-                            </ul>
+                              <ul
+                                style={{
+                                  color: darkMode ? "#f3f4f6" : "inherit",
+                                  paddingLeft: "20px",
+                                }}
+                              >
+                                {analysisResult.evaluation_metrics.code_security.issues_found.map(
+                                  (issue, i) => (
+                                    <li key={i}>{issue}</li>
+                                  )
+                                )}
+                              </ul>
+                            </Box>
                           </>
                         ) : (
                           <Typography
@@ -823,9 +889,12 @@ const CodeEvaluator = () => {
             <Card
               className="dashboard-card"
               sx={{
-                backgroundColor: darkMode ? "#2d2d2d" : "white",
+                backgroundColor: darkMode ? "#1f2937" : "white",
                 color: darkMode ? "#f3f4f6" : "#111827",
                 borderColor: darkMode ? "#374151" : "#e5e7eb",
+                boxShadow: darkMode
+                  ? "0 4px 6px rgba(0, 0, 0, 0.2)"
+                  : "0 4px 6px rgba(0, 0, 0, 0.1)",
               }}
             >
               <CardHeader
@@ -833,6 +902,7 @@ const CodeEvaluator = () => {
                 titleTypographyProps={{
                   variant: "h6",
                   color: darkMode ? "#f3f4f6" : "inherit",
+                  fontWeight: 600,
                 }}
                 avatar={<FaList color={darkMode ? "#34d399" : "#10b981"} />}
               />
@@ -876,27 +946,7 @@ const CodeEvaluator = () => {
   };
 
   // Theme configuration for MUI components
-  const themeStyles = {
-    button: {
-      color: darkMode ? "#f3f4f6" : undefined,
-    },
-    dialog: {
-      backgroundColor: darkMode ? "#2d2d2d" : "white",
-      color: darkMode ? "#f3f4f6" : "inherit",
-    },
-    select: {
-      backgroundColor: darkMode ? "#374151" : "white",
-      color: darkMode ? "#f3f4f6" : "black",
-      borderColor: darkMode ? "#6b7280" : undefined,
-    },
-    menuItem: {
-      backgroundColor: darkMode ? "#374151" : "white",
-      color: darkMode ? "#f3f4f6" : "black",
-      "&:hover": {
-        backgroundColor: darkMode ? "#4b5563" : undefined,
-      },
-    },
-  };
+  // const themeStyles = { ... }; // Removed unused themeStyles
 
   return (
     <div className={`container ${darkMode ? "dark-theme" : "light-theme"}`}>
