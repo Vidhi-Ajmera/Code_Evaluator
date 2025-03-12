@@ -8,7 +8,12 @@ import {
   FaTachometerAlt,
   FaArrowRight,
 } from "react-icons/fa";
-import { FaLinkedin, FaXTwitter, FaInstagram, FaYoutube } from 'react-icons/fa6';
+import {
+  FaLinkedin,
+  FaXTwitter,
+  FaInstagram,
+  FaYoutube,
+} from "react-icons/fa6";
 import { FaLightbulb, FaCommentDots, FaBrain } from "react-icons/fa";
 import { faCode } from "@fortawesome/free-solid-svg-icons";
 import TestPlatformVideo from "../../src/assests/Test_PlatForm.mp4";
@@ -20,18 +25,34 @@ import Singapore from "../assests/singapore-flag.svg";
 import uaeFlag from "../assests/uae-flag.svg";
 import usFlag from "../assests/us-flag.png";
 
-
 const LandingPage = () => {
   const navigate = useNavigate();
   const [isAuthenticated, setIsAuthenticated] = useState(false);
   const [showPopup, setShowPopup] = useState(false);
+  const [username, setUsername] = useState("");
 
   useEffect(() => {
     const token = localStorage.getItem("authToken");
     if (token) {
       setIsAuthenticated(true);
+
+      // Get the user's email from localStorage
+      const userInfoString = localStorage.getItem("userInfo");
+      if (userInfoString) {
+        try {
+          const userInfo = JSON.parse(userInfoString);
+          // Extract username from email (everything before @)
+          if (userInfo.email) {
+            const extractedUsername = userInfo.email.split("@")[0];
+            setUsername(extractedUsername);
+          }
+        } catch (error) {
+          console.error("Error parsing user info:", error);
+        }
+      }
     } else {
       setIsAuthenticated(false);
+      setUsername("");
     }
   }, []);
 
@@ -69,15 +90,45 @@ const LandingPage = () => {
         </div>
 
         <div className="auth-buttons">
-          <button className="log-butt" onClick={() => navigate("/login")}>
-            Log In
-          </button>
-          <button className="sign-butt" onClick={() => navigate("/signup")}>
-            Sign Up
-          </button>
+          {isAuthenticated ? (
+            <>
+              {/* Welcome message */}
+              <span
+                style={{
+                  color: "#fff",
+                  marginRight: "15px",
+                  fontWeight: "500",
+                }}
+              >
+                Welcome {username}!!
+              </span>
+              <button
+                className="log-butt"
+                onClick={() => {
+                  localStorage.removeItem("authToken");
+                  localStorage.removeItem("userInfo");
+                  setIsAuthenticated(false);
+                  setUsername("");
+                  navigate("/login");
+                }}
+              >
+                Log Out
+              </button>
+            </>
+          ) : (
+            <>
+              <button className="log-butt" onClick={() => navigate("/login")}>
+                Log In
+              </button>
+              <button className="sign-butt" onClick={() => navigate("/signup")}>
+                Sign Up
+              </button>
+            </>
+          )}
         </div>
       </nav>
 
+      {/* Rest of the component remains unchanged */}
       {/* Hero Section */}
       <header className="hero-section" id="main">
         <h1 className="hero-title">AI-Based Code Evaluator</h1>
@@ -314,12 +365,32 @@ const LandingPage = () => {
             />
           </div>
           <div className="about-content">
-          <p className="about-text">
-            <span className="about-highlight">Meridian Solutions</span> is a trusted provider of cutting-edge cloud and security solutions, empowering over <span className="about-highlight">1,400 global customers</span>. With deep expertise spanning healthcare, telecommunications, manufacturing, government, and the public sector, we deliver customized solutions tailored to our clients' evolving needs.
-          </p>
-          <p className="about-text">
-            Through strategic global partnerships, we offer an extensive suite of <span className="about-highlight">cloud applications, advanced security solutions,</span> and managed services. As a <span className="about-highlight">Tier 1 Cloud Solutions Partner (CSP)</span> and a <span className="about-highlight">Gold Certified Cloud Productivity Partner of Microsoft</span>, we are dedicated to unlocking the full potential of your organization’s digital transformation journey.
-          </p>
+            <p className="about-text">
+              <span className="about-highlight">Meridian Solutions</span> is a
+              trusted provider of cutting-edge cloud and security solutions,
+              empowering over{" "}
+              <span className="about-highlight">1,400 global customers</span>.
+              With deep expertise spanning healthcare, telecommunications,
+              manufacturing, government, and the public sector, we deliver
+              customized solutions tailored to our clients' evolving needs.
+            </p>
+            <p className="about-text">
+              Through strategic global partnerships, we offer an extensive suite
+              of{" "}
+              <span className="about-highlight">
+                cloud applications, advanced security solutions,
+              </span>{" "}
+              and managed services. As a{" "}
+              <span className="about-highlight">
+                Tier 1 Cloud Solutions Partner (CSP)
+              </span>{" "}
+              and a{" "}
+              <span className="about-highlight">
+                Gold Certified Cloud Productivity Partner of Microsoft
+              </span>
+              , we are dedicated to unlocking the full potential of your
+              organization’s digital transformation journey.
+            </p>
             <div className="more-info">
               <p>For more information, visit our official website:</p>
               <a
@@ -391,22 +462,27 @@ const LandingPage = () => {
       {/* Footer */}
       <footer className="footer">
         <div className="footer-container">
-
           {/* Left Section - Logo and Tagline */}
           <div className="footer-logo-section">
-            <img src={MeridianLogo} alt="Meridian Logo" className="meridian-logo" />
+            <img
+              src={MeridianLogo}
+              alt="Meridian Logo"
+              className="meridian-logo"
+            />
           </div>
 
           {/* Right Section - Message and Links */}
           <div className="footer-content">
-            <h2 className="footer-heading" style={{color:"beige"}}>Innovating Today, Shaping Tomorrow</h2>
-            <p className="footer-text" style={{color:"beige"}}>
-              As your trusted Microsoft Cloud Solution Provider, we offer expert guidance and customized
-              solutions to maximize the impact of your technology initiatives.
+            <h2 className="footer-heading" style={{ color: "beige" }}>
+              Innovating Today, Shaping Tomorrow
+            </h2>
+            <p className="footer-text" style={{ color: "beige" }}>
+              As your trusted Microsoft Cloud Solution Provider, we offer expert
+              guidance and customized solutions to maximize the impact of your
+              technology initiatives.
             </p>
           </div>
         </div>
-
 
         {/* Country Information Section */}
         <div className="footer-country-section">
@@ -415,8 +491,11 @@ const LandingPage = () => {
               <img src={indianFlag} alt="India Flag" className="country-flag" />
               <h3>India</h3>
             </div>
-            <p>Tower B, Office No 1103 & 1104,<br />
-              11th Floor, Spaze IT Tech Park,<br />
+            <p>
+              Tower B, Office No 1103 & 1104,
+              <br />
+              11th Floor, Spaze IT Tech Park,
+              <br />
               Sohna Road, Gurugram, India
             </p>
           </div>
@@ -426,7 +505,9 @@ const LandingPage = () => {
               <img src={uaeFlag} alt="UAE Flag" className="country-flag" />
               <h3>UAE</h3>
             </div>
-            <p>Unique World Business Centre,<br />
+            <p>
+              Unique World Business Centre,
+              <br />
               Al Karama, Dubai, UAE
             </p>
           </div>
@@ -436,59 +517,74 @@ const LandingPage = () => {
               <img src={usFlag} alt="US Flag" className="country-flag" />
               <h3>US</h3>
             </div>
-            <p>LLC1207 Delaware Ave #2193<br />
+            <p>
+              LLC1207 Delaware Ave #2193
+              <br />
               Wilmington, DE 19806
             </p>
           </div>
 
           <div className="country">
             <div className="country-header">
-              <img src={Singapore} alt="Singapore Flag" className="country-flag" />
+              <img
+                src={Singapore}
+                alt="Singapore Flag"
+                className="country-flag"
+              />
               <h3>Singapore</h3>
             </div>
-            <p>68 Circular Road #02-01<br />
+            <p>
+              68 Circular Road #02-01
+              <br />
               Singapore (049422)
             </p>
           </div>
         </div>
-
 
         {/* Copyright Notice and Social Links */}
         <div className="footer-bottom">
           <div className="footer-bottom-content">
             <div className="footer-left">
               <div className="social-links">
-                <a href="https://www.linkedin.com/company/on-meridian/posts/?feedView=all"
+                <a
+                  href="https://www.linkedin.com/company/on-meridian/posts/?feedView=all"
                   target="_blank"
-                  rel="noopener noreferrer">
+                  rel="noopener noreferrer"
+                >
                   <FaLinkedin />
                 </a>
-                <a href="https://x.com/On_Meridian"
+                <a
+                  href="https://x.com/On_Meridian"
                   target="_blank"
-                  rel="noopener noreferrer">
+                  rel="noopener noreferrer"
+                >
                   <FaXTwitter />
                 </a>
-                <a href="https://www.instagram.com/onmeridian/"
+                <a
+                  href="https://www.instagram.com/onmeridian/"
                   target="_blank"
-                  rel="noopener noreferrer">
+                  rel="noopener noreferrer"
+                >
                   <FaInstagram />
                 </a>
-                <a href="https://www.youtube.com/@onmeridian"
+                <a
+                  href="https://www.youtube.com/@onmeridian"
                   target="_blank"
-                  rel="noopener noreferrer">
+                  rel="noopener noreferrer"
+                >
                   <FaYoutube />
                 </a>
               </div>
             </div>
 
-            <div className="footer-center" style={{color:"beige !important", fontSize:"1.1rem"}}>
+            <div
+              className="footer-center"
+              style={{ color: "beige !important", fontSize: "1.1rem" }}
+            >
               <p>&copy; 2025 Meridian. All rights reserved.</p>
             </div>
             <div className="footer-right">
-              <img
-                src={MeridianPartner}
-                className="footer-image"
-              />
+              <img src={MeridianPartner} className="footer-image" />
             </div>
           </div>
         </div>

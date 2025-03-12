@@ -1,7 +1,7 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import { DotLottieReact } from "@lottiefiles/dotlottie-react";
+import { useNavigate, Link } from "react-router-dom";
 import "../styles/Signup.css";
-
 import { FaCode } from "react-icons/fa";
 
 const SignUpPage = () => {
@@ -9,14 +9,70 @@ const SignUpPage = () => {
   const [password, setPassword] = useState("");
   const [confirmPassword, setConfirmPassword] = useState("");
   const [showPassword, setShowPassword] = useState(false);
+  const [error, setError] = useState("");
+  const [isLoading, setIsLoading] = useState(false);
+  const navigate = useNavigate();
 
-  const handleSubmit = (e) => {
+  // Check if user is already logged in
+  useEffect(() => {
+    const token = localStorage.getItem("authToken");
+    if (token) {
+      // User is already logged in, redirect to landing page
+      navigate("/");
+    }
+  }, [navigate]);
+
+  const handleSubmit = async (e) => {
     e.preventDefault();
-    if (password !== confirmPassword) {
-      alert("Passwords do not match!");
+    setError("");
+    
+    // Validate form
+    if (!email || !password || !confirmPassword) {
+      setError("All fields are required");
       return;
     }
-    console.log("Signing up with", email, password);
+
+    // Validate passwords match
+    if (password !== confirmPassword) {
+      setError("Passwords do not match!");
+      return;
+    }
+
+    // Validate password strength
+    if (password.length < 6) {
+      setError("Password must be at least 6 characters long");
+      return;
+    }
+
+    setIsLoading(true);
+
+    try {
+      // Create username from email (everything before @)
+      const username = email.split('@')[0];
+      
+      // Store authentication data
+      localStorage.setItem("authToken", "user-auth-token-" + Date.now());
+      localStorage.setItem(
+        "userInfo",
+        JSON.stringify({
+          email: email,
+          username: username,
+          signupDate: new Date().toISOString(),
+        })
+      );
+
+      // Small delay to make the loading state visible
+      await new Promise((resolve) => setTimeout(resolve, 500));
+
+      // Explicitly redirect to landing page
+      console.log("Redirecting to landing page");
+      navigate("/", { replace: true });
+    } catch (err) {
+      console.error("Signup error:", err);
+      setError("An error occurred during signup. Please try again.");
+    } finally {
+      setIsLoading(false);
+    }
   };
 
   return (
@@ -29,22 +85,26 @@ const SignUpPage = () => {
           autoplay
         />
       </div>
-      
+
       {/* Right Panel: Signup Form */}
       <div className="right-panel">
-        <h1 className="brand-title">
-          <FaCode style={{ marginRight: "5px", marginTop: "10px"}} />
+        <h1 className="brand-title" onClick={() => navigate("/")}>
+          <FaCode style={{ marginRight: "5px", marginTop: "10px" }} />
           CodeIQ.ai
         </h1>
         <div className="signup-box">
           <h2>Create an Account</h2>
-          <p style={{ marginBottom: "25px", color:"black"}}>
-            Sign up to start using our platform !
+          <p style={{ marginBottom: "25px", color: "black" }}>
+            Sign up to start using our platform!
           </p>
+
+          {error && <div className="error-message">{error}</div>}
+
           <form onSubmit={handleSubmit} className="signup-form">
             <div className="input-group">
-              <label>Email</label>
+              <label htmlFor="email">Email</label>
               <input
+                id="email"
                 type="email"
                 placeholder="Enter your email"
                 value={email}
@@ -53,9 +113,10 @@ const SignUpPage = () => {
               />
             </div>
             <div className="input-group">
-              <label>Password</label>
+              <label htmlFor="password">Password</label>
               <div className="password-wrapper">
                 <input
+                  id="password"
                   type={showPassword ? "text" : "password"}
                   placeholder="Enter your password"
                   value={password}
@@ -72,9 +133,10 @@ const SignUpPage = () => {
               </div>
             </div>
             <div className="input-group">
-              <label>Confirm Password</label>
+              <label htmlFor="confirmPassword">Confirm Password</label>
               <div className="password-wrapper">
                 <input
+                  id="confirmPassword"
                   type={showPassword ? "text" : "password"}
                   placeholder="Confirm your password"
                   value={confirmPassword}
@@ -83,11 +145,16 @@ const SignUpPage = () => {
                 />
               </div>
             </div>
-            <button type="submit" className="signup-btn">
-              Sign Up Now
+            <button 
+              type="submit" 
+              className="signup-btn" 
+              disabled={isLoading}
+              onClick={handleSubmit} // Added explicit click handler
+            >
+              {isLoading ? "Signing Up..." : "Sign Up Now"}
             </button>
             <p className="login-text">
-              Already have an account? <a href="../login">Log In</a>
+              Already have an account? <Link to="/login">Log In</Link>
             </p>
           </form>
         </div>
