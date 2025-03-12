@@ -1,59 +1,56 @@
-/* Full page container */
+@import url('https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600&display=swap');
+
 * {
+  font-family: 'Poppins', sans-serif !important;
   margin: 0;
   padding: 0;
   box-sizing: border-box;
-  font-family: monospace;
 }
 
 .login-container {
   display: flex;
   height: 100vh;
   width: 100%;
+  overflow: hidden;
 }
 
 .left-panel {
-  flex: 0.7;
   display: flex;
+  flex: 0.4;
   justify-content: center;
   align-items: center;
   background: linear-gradient(135deg, #667eea, #764ba2);
   padding: 20px;
   border-right: 2px solid black;
-  max-width: 50%;
 }
 
 .left-panel lottie-player {
   width: 100%;
-  height: 80%;
+  height: auto;
+  max-height: 80%;
 }
 
 .right-panel {
-  flex: 1;
+  flex-grow: 1;
   display: flex;
   flex-direction: column;
   justify-content: center;
   align-items: center;
   background: #e5e4e4;
-}
-
-.right-panel h1 {
-  font-size: 2.5rem;
-  font-weight: bold;
-  color: #3f3845;
-  margin-bottom: 80px;
-  text-align: le;
-  text-shadow: 2px 10px 10px rgba(0, 0, 0, 0.2);
+  padding: 20px;
+  width: 100%;
+  overflow-y: auto;
 }
 
 .login-box {
-  background: rgb(226, 223, 223);
+  background: rgb(220, 217, 217);
   padding: 30px;
   border-radius: 12px;
   box-shadow: 10px 10px 10px rgba(0, 0, 0, 0.2);
-  height: 55%;
-  width: 60%;
+  width: 100%;
+  max-width: 450px;
   text-align: center;
+  transition: transform 0.3s ease;
 }
 
 .login-box:hover {
@@ -116,9 +113,8 @@
   border-radius: 6px;
   cursor: pointer;
   font-size: 16px;
-  margin-top: 10px;
+  margin: 15px 0;
   transition: 0.3s ease;
-  margin-bottom: 40px;
 }
 
 .login-btn:hover {
@@ -128,16 +124,19 @@
 }
 
 h2 {
+  font-size: 1.5rem;
+  color: black;
   margin-bottom: 10px;
 }
 
 .register-text {
   margin-top: 10px;
-  font-size: 14px;
+  color: black;
+  font-size: 1.1rem;
 }
 
 .register-text a {
-  font-size: 1.3rem;
+  font-size: 1.2rem;
   color: #0d0d0e;
   text-decoration: underline;
   font-weight: bold;
@@ -147,21 +146,93 @@ h2 {
   text-decoration: underline;
 }
 
+.login-buttons {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 10px;
+  flex-wrap: wrap;
+  margin-top: 10px;
+}
+
+.login-buttons button {
+  font-size: 1rem;
+  padding: 10px 15px;
+  font-weight: bold;
+  border-radius: 20px;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  border: none;
+}
+
+.login-buttons button img {
+  width: 20px;
+  height: 20px;
+}
+
+.login-buttons button:hover {
+  transform: scale(1.08);
+  background-color: rgb(224, 221, 221);
+}
+
+.or-separator {
+  display: flex;
+  align-items: center;
+  margin: 15px 0;
+  width: 100%;
+}
+
+.or-separator::before,
+.or-separator::after {
+  content: "";
+  flex: 1;
+  border-bottom: 1px solid #070707;
+}
+
+.or-separator span {
+  padding: 0 10px;
+  font-weight: bold;
+  color: #0a0a0a;
+}
+
+.brand-title span {
+  color: black !important;
+}
+
+@media (max-width: 1024px) {
+  .left-panel {
+    flex: 0.3;
+  }
+  .login-box {
+    max-width: 400px;
+  }
+}
+
 @media (max-width: 768px) {
   .login-container {
     flex-direction: column;
+    height: auto;
+    min-height: 100vh;
   }
-
   .left-panel {
     height: 40vh;
+    flex: none;
+    width: 100%;
+    border-right: none;
+    border-bottom: 2px solid black;
   }
-
   .right-panel {
-    height: 60vh;
+    height: auto;
+    padding: 20px;
   }
-
   .left-panel lottie-player {
     width: 60%;
+    height: auto;
+  }
+  .login-box {
+    padding: 20px;
   }
 }
 
@@ -169,58 +240,20 @@ h2 {
   .left-panel {
     display: none;
   }
-
   .right-panel {
     flex: 1;
+    height: auto;
+    padding: 15px;
   }
-}
-.brand-title {
-  font-size: 2rem;
-  font-weight: bold;
-  text-align: center;
-  color: #2d9cdb; /* Adjust to fit theme */
-  text-transform: uppercase;
-  letter-spacing: 1.5px;
-  margin-bottom: 10px;
-  background: linear-gradient(to right, #616263, #858486);
-  background-clip: text;
-  -webkit-background-clip: text;
-  -webkit-text-fill-color: transparent;
-}
-
-.login-buttons button {
-  font-size: 1.02rem;
-  padding: 5px;
-  font-weight: bold;
-  border-radius: 20px;
-  cursor: pointer;
-  display: flex;
-  align-items: center;
-  cursor: pointer;
-}
-
-.login-buttons {
-  margin-bottom: 20px;
-}
-
-.login-buttons button img {
-  width: 20px;
-  height: 20px;
-  margin-right: 5px;
-}
-
-.login-buttons button:first-child:hover {
-  transform: scale(1.08);
-  background-color: rgb(198, 194, 194);
-}
-.login-buttons button:nth-child(2):hover {
-  transform: scale(1.08);
-  background-color: rgb(198, 194, 194);
-}
-
-.login-buttons {
-  display: flex;
-  align-items: center;
-  justify-content: center; /* Centers horizontally */
-  gap: 5%;
+  .login-box {
+    width: 100%;
+    padding: 15px;
+  }
+  .login-buttons {
+    gap: 5px;
+  }
+  .login-buttons button {
+    font-size: 0.9rem;
+    padding: 8px 10px;
+  }
 }

@@ -70,9 +70,9 @@ except Exception as e:
     openai_client = None  # Set to None instead of raising exception
 
 # JWT Configuration
-SECRET_KEY = "your-secret-key"  # Replace with a secure secret key
+SECRET_KEY = os.getenv("SECRET_KEY", "your-secret-key")  # Get from environment or use default
 ALGORITHM = "HS256"
-ACCESS_TOKEN_EXPIRE_MINUTES = 30
+ACCESS_TOKEN_EXPIRE_MINUTES = 60  # Extended token lifespan
 
 # OAuth2 Scheme
 oauth2_scheme = OAuth2PasswordBearer(tokenUrl="token")
@@ -90,7 +90,7 @@ class LoginUser(BaseModel):
 class Code(BaseModel):
     code: str
     language: str  # "java", "python", "c++"
-    course_level: str  # "freshman", "sophomore", "junior", "senior", "graduate"
+    course_level:  Optional[str] = None  # "freshman", "sophomore", "junior", "senior", "graduate"
     assignment_description: Optional[str] = None
     student_id: Optional[str] = None
     assignment_id: Optional[str] = None
@@ -160,6 +160,27 @@ async def signup(user: User):
     except Exception as e:
         raise HTTPException(status_code=500, detail=f"Database error: {str(e)}")
 
+@app.post("/token")
+async def login_for_access_token(form_data: OAuth2PasswordRequestForm = Depends()):
+    try:
+        db_user = users_collection.find_one({"email": form_data.username, "password": form_data.password})
+        if not db_user:
+            raise HTTPException(
+                status_code=status.HTTP_401_UNAUTHORIZED,
+                detail="Incorrect email or password",
+                headers={"WWW-Authenticate": "Bearer"},
+            )
+        
+        access_token_expires = timedelta(minutes=ACCESS_TOKEN_EXPIRE_MINUTES)
+        access_token = create_access_token(
+            data={"sub": form_data.username}, expires_delta=access_token_expires
+        )
+        return {"access_token": access_token, "token_type": "bearer", "username": db_user.get("username")}
+    except Exception as e:
+        if "MongoDB" in str(e):
+            raise HTTPException(status_code=500, detail=f"Database connection error: {str(e)}")
+        raise HTTPException(status_code=500, detail=f"Login error: {str(e)}")
+
 @app.post("/login")
 async def login(user: LoginUser):
     try:
@@ -179,7 +200,12 @@ async def login(user: LoginUser):
 @app.post("/submit_code")
 async def submit_code(code: Code, email: str = Depends(verify_token)):
     if not openai_client:
-        raise HTTPException(status_code=503, detail="OpenAI service is currently unavailable")
+        # Fall back to mock analysis if OpenAI is not available
+        mock_analysis = generate_mock_analysis(code.code, code.language)
+        return {
+            "id": "mock-123",
+            "plagiarism_analysis": mock_analysis
+        }
     
     try:
         # Enhanced system prompt for plagiarism detection and code evaluation
@@ -312,7 +338,7 @@ async def submit_code(code: Code, email: str = Depends(verify_token)):
 
         **Context**:
         - Language: {code.language}
-        - Course Level: {code.course_level}
+        - Course Level: {code.course_level if code.course_level else "Not provided"}
         - Assignment Description: {code.assignment_description if code.assignment_description else "Not provided"}
 
         **Instructions**:
@@ -334,7 +360,7 @@ async def submit_code(code: Code, email: str = Depends(verify_token)):
         # Call OpenAI API with better error handling
         try:
             response = openai_client.chat.completions.create(
-                model=os.getenv("OPENAI_DEPLOYMENT_NAME"),
+                model=os.getenv("OPENAI_DEPLOYMENT_NAME", "gpt-35-turbo"),
                 messages=[
                     {"role": "system", "content": system_prompt},
                     {"role": "user", "content": user_message}

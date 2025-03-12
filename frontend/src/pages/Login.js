@@ -1,40 +1,34 @@
 import React, { useState } from "react";
+import { useNavigate } from "react-router-dom"; // Added for navigation
 import { DotLottieReact } from "@lottiefiles/dotlottie-react";
+import axios from "axios"; // Added for API requests
 import { auth, provider, signInWithPopup } from "../components/firebase";
 import "../../src/styles/Login.css";
 import { FaCode } from "react-icons/fa";
-import { useNavigate } from "react-router-dom";
-import axios from "axios";
 
 const LoginPage = () => {
+  const navigate = useNavigate(); // Navigation hook
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [showPassword, setShowPassword] = useState(false);
-  const navigate = useNavigate();
 
   const handleSubmit = async (e) => {
     e.preventDefault();
 
     try {
-      // Debug: Log the backend URL
-      const backendUrl =
-        process.env.REACT_APP_BACKEND_URL || "http://localhost:8000";
-      console.log("Backend URL:", backendUrl);
-
-      // Send login request to the backend
-      const response = await axios.post(`${backendUrl}/login`, {
+      const response = await axios.post("http://localhost:8000/login", {
         email,
         password,
       });
 
-      const { access_token, username } = response.data;
-      localStorage.setItem("authToken", access_token); // Store the token
-      localStorage.setItem("username", username); // Store the username
-      alert("Login successful!");
-      navigate("/code-evaluator"); // Redirect to the code evaluator page
+      if (response.data.access_token) {
+        localStorage.setItem("token", response.data.access_token); // Save token
+        alert("Login successful!");
+        navigate("/code-evaluator"); // Navigate to CodeEvaluator page
+      }
     } catch (error) {
       console.error("Login failed:", error);
-      alert("Login failed. Please check your credentials.");
+      alert("Invalid email or password. Please try again.");
     }
   };
 
@@ -42,13 +36,14 @@ const LoginPage = () => {
     try {
       const result = await signInWithPopup(auth, provider);
       const user = result.user;
+
       console.log("User logged in:", user);
+      localStorage.setItem("user", JSON.stringify(user)); // Save Google user data
       alert(`Welcome ${user.displayName}!`);
-      localStorage.setItem("authToken", user.accessToken); // Store the token
-      localStorage.setItem("username", user.displayName); // Store the username
-      navigate("/code-evaluator"); // Redirect to the code evaluator page
+      navigate("/code-evaluator"); // Navigate to CodeEvaluator page
     } catch (error) {
-      console.error("Error during login:", error);
+      console.error("Error during Google login:", error);
+
       if (error.code === "auth/user-not-found") {
         alert("User not registered. Please sign up first.");
       } else if (error.code === "auth/popup-closed-by-user") {
@@ -70,15 +65,20 @@ const LoginPage = () => {
           autoplay
         />
       </div>
-
       <div className="right-panel">
         <h1 className="brand-title">
           <FaCode style={{ marginRight: "5px", marginTop: "10px" }} />
-          Code IQ Evaluator
+          <span style={{ color: "black" }}>CodeIQ.ai</span>
         </h1>
         <div className="login-box">
           <h2>Welcome Back!</h2>
-          <p style={{ marginBottom: "25px" }}>
+          <p
+            style={{
+              marginBottom: "25px",
+              color: "black",
+              fontSize: "1.1rem",
+            }}
+          >
             Log in to your account to continue.
           </p>
           <form onSubmit={handleSubmit} className="login-form">
@@ -114,6 +114,10 @@ const LoginPage = () => {
             <button type="submit" className="login-btn">
               Login Now
             </button>
+            <div className="or-separator">
+              <span>OR</span>
+            </div>
+
             <div className="login-buttons">
               <button
                 type="button"
@@ -126,18 +130,6 @@ const LoginPage = () => {
                   className="google-logo"
                 />
                 Login with Google
-              </button>
-              <button
-                type="button"
-                className="micro-login-btn"
-                onClick={handleGoogleLogin}
-              >
-                <img
-                  src="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAOEAAADhCAMAAAAJbSJIAAAAclBMVEXz8/PzUyWBvAYFpvD/ugjz9fb19Pbz+fr49fv79vPy9fsAofD/tgDz29Xh6tLzRAB5uADzTRjzlH2u0XBwxPH70HHS5vP16tLz4+Dn7d3zPQCpz2bd6/NmwfH7zmf07d3zjnTzuKrI3qGh1fL43aIAnPDEciU8AAABeUlEQVR4nO3cSW7CUBBFURLiD4GYvjVtGva/xUxixxJfyqhMBudu4Omo5tXrSZKkVkV4zVQKLysso9vVxLSfRJe7YFlNY6uug5+t4WEW3eT+ikU5fYptvmiEy+fgCAkJCQkJCQkJCQkJCQkJCQkJCQkJCQkJCQkJCQkJCQkJCQkJCQkJCQkJCQkJCQkJCQkJCQkJCQkJCQkJCQkJCQkJCQkJCQkJCQkJCQkJCQkJCbsVVvPYpi3h7BHC3XUR3HstTB/L4A77zJ/dYhBes5WG0eUfCUuS9Gev4TVTaRRdkQEeT6vYTp81MX2tgztfMsTNrR/b+FQLR+u36LY54ThY2F+1hC+xERISEhISEhISEhISEhISEhISEhISEhISEhISEhISEhISEhISEhISEhISEhISEhISEhISEhISEhISEhISEhISEhISEhISEhISEhISEhISEhISEnYrvI1ju/3+Lz0/5H9psYnu2ExdttHd+7qtCO/RQkmS/lffeJs9EU0/9ZkAAAAASUVORK5CYII="
-                  alt="Google Logo"
-                  className="google-logo"
-                />
-                Login with Microsoft
               </button>
             </div>
             <p className="register-text">
