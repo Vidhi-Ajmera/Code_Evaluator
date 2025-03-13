@@ -3,6 +3,7 @@ import { useNavigate } from "react-router-dom"; // Added for navigation
 import { DotLottieReact } from "@lottiefiles/dotlottie-react";
 import axios from "axios"; // Added for API requests
 import { auth, provider, signInWithPopup } from "../components/firebase";
+import { sendPasswordResetEmail } from "firebase/auth";
 import "../../src/styles/Login.css";
 import { FaCode } from "react-icons/fa";
 
@@ -55,6 +56,27 @@ const LoginPage = () => {
       }
     }
   };
+
+// Forgot Password Handler
+const handleForgotPassword = async () => {
+  if (!email) {
+    alert("Please enter your email to reset password.");
+    return;
+  }
+  try {
+    await sendPasswordResetEmail(auth, email);
+    alert("Password reset email sent! Please check your inbox.");
+  } catch (error) {
+    console.error("Error sending password reset email:", error);
+    if (error.code === "auth/user-not-found") {
+      alert("No user found with this email.");
+    } else if (error.code === "auth/invalid-email") {
+      alert("Invalid email address.");
+    } else {
+      alert("Failed to send password reset email. Please try again.");
+    }
+  }
+};
 
   return (
     <div className="login-container">
@@ -111,6 +133,14 @@ const LoginPage = () => {
                 </button>
               </div>
             </div>
+
+            {/* Forgot Password Link */}
+            <p className="forgot-password-text">
+            <button type="button" onClick={handleForgotPassword} className="forgot-password-btn">
+              Forgot Password?
+            </button>
+            </p>
+
             <button type="submit" className="login-btn">
               Login Now
             </button>
