@@ -3,6 +3,7 @@ import { DotLottieReact } from "@lottiefiles/dotlottie-react";
 import { useNavigate, Link } from "react-router-dom";
 import "../styles/Signup.css";
 import { FaCode } from "react-icons/fa";
+import PasswordStrengthChecker from "../components/PasswordStrengthChecker";
 
 const SignUpPage = () => {
   const [email, setEmail] = useState("");
@@ -22,6 +23,15 @@ const SignUpPage = () => {
     }
   }, [navigate]);
 
+  
+  // Password rules checking for enabling/disabling submit button
+  const isPasswordValid =
+    password.length >= 8 &&
+    /[a-z]/.test(password) &&
+    /[A-Z]/.test(password) &&
+    /\d/.test(password) &&
+    /[@$!%*?&#]/.test(password);
+
   const handleSubmit = async (e) => {
     e.preventDefault();
     setError("");
@@ -35,12 +45,6 @@ const SignUpPage = () => {
     // Validate passwords match
     if (password !== confirmPassword) {
       setError("Passwords do not match!");
-      return;
-    }
-
-    // Validate password strength
-    if (password.length < 6) {
-      setError("Password must be at least 6 characters long");
       return;
     }
 
@@ -131,6 +135,8 @@ const SignUpPage = () => {
                   {showPassword ? "👁️" : "🔒"}
                 </button>
               </div>
+                   {/* Show rules if password doesn't match all */}
+                    <PasswordStrengthChecker password={password} />
             </div>
             <div className="input-group">
               <label htmlFor="confirmPassword">Confirm Password</label>
@@ -145,14 +151,17 @@ const SignUpPage = () => {
                 />
               </div>
             </div>
-            <button 
-              type="submit" 
-              className="signup-btn" 
-              disabled={isLoading}
-              onClick={handleSubmit} // Added explicit click handler
-            >
-              {isLoading ? "Signing Up..." : "Sign Up Now"}
+           <button
+                  type="submit"
+                  className={`signup-btn ${
+                  !isPasswordValid || password !== confirmPassword ? "disabled-btn" : ""
+                  }`}
+                  disabled={!isPasswordValid || password !== confirmPassword || isLoading}
+                  onClick={handleSubmit}
+                  >
+                  {isLoading ? "Signing Up..." : "Sign Up Now"}
             </button>
+
             <p className="login-text">
               Already have an account? <Link to="/login">Log In</Link>
             </p>
