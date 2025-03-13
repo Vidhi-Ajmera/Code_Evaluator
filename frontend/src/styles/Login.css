@@ -201,6 +201,41 @@ h2 {
   color: black !important;
 }
 
+
+/* Forgot Password Section */
+.forgot-password-text {
+  text-align: right;
+  margin-top: 5px;
+  margin-bottom: 15px;
+}
+
+.forgot-password-btn {
+  background: none;
+  border: none;
+  color: #007bff;
+  font-size: 0.9rem;
+  text-decoration: none;
+  cursor: pointer;
+  padding: 0;
+  transition: color 0.3s ease;
+}
+
+.forgot-password-btn:hover {
+  color: #0056b3;
+  text-decoration: underline;
+}
+
+.forgot-password-btn:active {
+  transform: scale(0.95);
+}
+
+/* Media Query for smaller screens */
+@media (max-width: 480px) {
+  .forgot-password-text {
+    text-align: center; /* Center align on small devices */
+  }
+}
+
 @media (max-width: 1024px) {
   .left-panel {
     flex: 0.3;
