@@ -1,264 +1,449 @@
-@import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap');
-
-* {
-  font-family: 'Inter', sans-serif;
-  margin: 0;
-  padding: 0;
-  box-sizing: border-box;
+/* CodeEvaluator.css - Fixed Layout */
+:root {
+  --primary-color: #3b82f6;
+  --primary-hover: #2563eb;
+  --error-color: #ef4444;
+  --success-color: #10b981;
+  --warning-color: #f59e0b;
+  --light-bg: #ffffff;
+  --dark-bg: #1a1a1a;
+  --light-text: #111827;
+  --dark-text: #f3f4f6;
+  --light-border: #e5e7eb;
+  --dark-border: #092348;
+  --light-card-bg: #ffffff;
+  --dark-card-bg: #1f2937;
+  --light-paper-bg: #f9fafb;
+  --dark-paper-bg: #5c6779;
+  --transition: all 0.3s ease;
 }
 
 body {
-  background-color: #f9fafb;
-  color: #111827;
+  margin: 0;
+  padding: 0;
+  font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, 'Open Sans', 'Helvetica Neue', sans-serif;
+  line-height: 1.5;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+  overflow-x: hidden;
 }
 
-body.dark-theme {
-  background-color: #1a1a1a;
-  color: #f3f4f6;
+.light-theme {
+  background-color: var(--light-bg);
+  color: var(--light-text);
 }
 
+.dark-theme {
+  background-color: var(--dark-bg);
+  color: var(--dark-text);
+}
+/* Fix for container class */
 .container {
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  flex-grow: 1;  /* Helps expand content */
   width: 100%;
   max-width: 1200px;
-  min-height: 100vh;
-  margin: auto;
-  padding: 2rem;
-  gap: 2rem;
-}
-
-
-.title {
-  font-size: 2rem;
-  font-weight: 700;
-  color: #111827;
+  margin: 0 auto;
+  padding: 20px;
+  box-sizing: border-box;
   display: flex;
-  align-items: center;
-  gap: 0.5rem;
-  cursor: pointer;
-  transition: transform 0.3s ease;
+  flex-direction: column;
+  min-height: 100vh;
+  background-color: var(--light-bg); /* Use CSS variable instead of fixed color */
+  color: var(--light-text); /* Use CSS variable instead of fixed color */
+  transition: var(--transition);
 }
 
-.dark-theme .title {
-  color: #f3f4f6;
+.container.dark-theme {
+  background-color: var(--dark-bg); /* Use CSS variable instead of fixed color */
+  color: var(--dark-text); /* Use CSS variable instead of fixed color */
 }
 
-.title:hover {
-  transform: scale(1.05);
+/* Fix for top-section class */
+.top-section {
+  display: flex;
+  flex-direction: column;
+  width: 100%;
+  margin-bottom: 30px;
+  position: relative;
+  background-color: var(--light-bg); /* Use CSS variable instead of fixed color */
+  color: var(--light-text); /* Use CSS variable instead of fixed color */
+  transition: var(--transition);
 }
+
+.top-section.dark-theme,
+.dark-theme .top-section {
+  background-color: var(--dark-bg); /* Use CSS variable instead of fixed color */
+  color: var(--dark-text); /* Use CSS variable instead of fixed color */
+}
+
+/* Fix for editor container */
 .editor-container {
   width: 100%;
-  min-height: 60vh; /* Changed from fixed height to min-height */
-  height: 100%;      /* Ensures it adapts to available space */
-  flex-grow: 1;      /* Allows it to expand in flexible layouts */
-  border: 1px solid #e5e7eb;
-  border-radius: 12px;
+  height: 250px;
+  border-radius: 8px;
   overflow: hidden;
-  background-color: #ffffff;
-  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+  border: 1px solid var(--light-border);
+  margin-bottom: 20px;
+  transition: var(--transition);
+  position: relative;
+  background-color: var(--light-bg);
 }
 
 .dark-theme .editor-container {
-  border-color: #374151;
-  background-color: #2d2d2d;
+  border-color: var(--dark-border);
+  background-color: var(--dark-bg);
 }
 
+/* Fix for app-layout */
+.app-layout {
+  display: flex;
+  flex-direction: column;
+  width: 100%;
+  background-color: var(--light-bg);
+  color: var(--light-text);
+  transition: var(--transition);
+}
 
-/* CodeMirror Editor Styles */
+.app-layout.dark-theme,
+.dark-theme .app-layout {
+  background-color: var(--dark-bg);
+  color: var(--dark-text);
+}
+
+/* Fix potential issue with editor background */
 .cm-editor {
   height: 100% !important;
-  font-size: 1rem;
-  text-align: left !important;
-  background-color: #ffffff !important;
-  color: #111827 !important;
+  width: 100% !important;
+  font-family: 'Fira Code', monospace;
+  transition: var(--transition);
 }
 
 .dark-theme .cm-editor {
-  background-color: #2d2d2d !important;
-  color: #f3f4f6 !important;
+  background-color: var(--dark-bg) !important;
 }
 
-.cm-content,
-.cm-line {
-  color: inherit !important;
+.dark-theme .cm-editor .cm-scroller {
+  color: var(--dark-text);
 }
 
-.cm-gutters {
-  background-color: #f9fafb !important;
-  border-right: 1px solid #e5e7eb !important;
+/* Ensure proper application of dark theme to nested elements */
+.dark-theme * {
+  border-color: var(--dark-border);
+}
+/* Controls for editor properly positioned */
+.editor-controls {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  width: 100%;
+  margin-bottom: 15px;
+}
+ /* Language Selector */
+ .language-selector {
+  font-size: 0.9rem;
+  font-weight: bold;
+  border-radius: 12px;
+  border: 3px solid black;
+  transition: all 0.3s ease-in-out;
 }
 
-.dark-theme .cm-gutters {
-  background-color: #1a1a1a !important;
-  border-right: 1px solid #374151 !important;
+.dark-theme .language-selector {
+  background-color: #333;
+  color: white;
+  border-radius: 12px;
+  border: 2px solid gray;
 }
 
-.cm-activeLine {
-  background-color: #e2e8f0 !important;
+.language-selector:hover,
+.dark-theme .language-selector:hover {
+  box-shadow: 4px 4px 15px rgba(255, 255, 255, 0.3);
+  background: rgba(36, 36, 36, 0.3);
+  transform: scale(1.05);
 }
 
-.dark-theme .cm-activeLine {
-  background-color: #374151 !important;
-}
-
+/* Button container with proper spacing and alignment */
 .button-container {
   display: flex;
-  gap: 1rem;
-  margin-top: 1rem;
+  justify-content: space-between;
+  align-items: center;
+  width: 100%;
+  margin-top: 10px;
+  gap: 15px;
 }
 
-.reset-button,
-.analyze-button {
-  padding: 0.75rem 1.5rem;
-  border: none;
-  border-radius: 8px;
-  font-size: 1rem;
-  font-weight: 600;
-  cursor: pointer;
+.analyze-button, .reset-button {
   display: flex;
   align-items: center;
-  gap: 0.5rem;
-  transition: background-color 0.3s ease;
+  justify-content: center;
+  gap: 8px;
+  padding: 10px 20px;
+  border-radius: 8px;
+  font-weight: 500;
+  min-width: 150px;
+  transition: var(--transition);
+  cursor: pointer;
+  border: none;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+}
+
+.analyze-button {
+  background-color: var(--primary-color);
+  color: white;
+  flex-grow: 2;
+}
+
+.analyze-button:hover {
+  background-color: var(--primary-hover);
 }
 
 .reset-button {
-  background-color: #ef4444;
-  color: #ffffff;
+  background-color: var(--error-color);
+  color: white;
+  flex-grow: 1;
 }
 
 .reset-button:hover {
   background-color: #dc2626;
 }
 
-.analyze-button {
-  background-color: #3b82f6;
-  color: #ffffff;
+.button-icon {
+  font-size: 16px;
 }
 
-.analyze-button:hover {
-  background-color: #2563eb;
-}
-
-.analyze-button:disabled {
-  background-color: #9ca3af;
-  cursor: not-allowed;
-}
-
+/* Theme toggle properly positioned */
 .theme-toggle {
   position: fixed;
-  top: 1rem;
-  right: 1rem;
+  top: 20px;
+  right: 20px;
   display: flex;
   align-items: center;
-  gap: 0.5rem;
-  padding: 0.5rem;
-  border-radius: 8px;
-  background-color: #ffffff;
+  gap: 8px;
+  padding: 8px 12px;
+  border-radius: 20px;
   box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
-  cursor: pointer;
+  z-index: 100;
+  transition: var(--transition);
 }
 
-.dark-theme .theme-toggle {
-  background-color: #374151;
-  color: #f3f4f6;
+.theme-icon {
+  font-size: 18px;
+  transition: var(--transition);
 }
 
+.active-icon {
+  transform: scale(1.2);
+}
+
+/* Analysis results section */
 .analysis-container {
   width: 100%;
-  margin-top: 2rem;
-  padding: 1.5rem;
-  border: 1px solid #e5e7eb;
-  border-radius: 12px;
-  background-color: #ffffff;
-  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+  margin-top: 30px;
+  padding-top: 30px;
+  border-top: 1px solid var(--light-border);
+  transition: var(--transition);
 }
 
 .dark-theme .analysis-container {
-  border-color: #374151;
-  background-color: #2d2d2d;
-  color: #f3f4f6;
+  border-color: var(--dark-border);
 }
 
-.chart-container {
-  margin-top: 1.5rem;
+/* Dashboard cards with proper spacing and layout */
+.dashboard-card {
+  margin-bottom: 20px;
+  transition: var(--transition);
+  border-radius: 8px;
+  overflow: hidden;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
 }
+
+.dark-theme .dashboard-card {
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
+}
+
+/* Grid layout for the analysis cards */
+.analysis-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+  gap: 20px;
+  width: 100%;
+}
+
+/* Error message styling */
+.error-message {
+  margin-top: 20px;
+  border-radius: 8px;
+  overflow: hidden;
+  width: 100%;
+}
+
+/* Code block styling */
+.dark-pre {
+  color: var(--dark-text);
+  background-color: rgba(0, 0, 0, 0.3);
+}
+
+pre {
+  background-color: rgba(0, 0, 0, 0.05);
+  padding: 10px;
+  border-radius: 4px;
+  overflow-x: auto;
+  margin: 0;
+  font-family: 'Fira Code', monospace;
+}
+
+/* Logout button properly positioned */
 
 .logout-button-main {
   position: fixed;
-  top: 1rem;
-  left: 1rem;
-  padding: 0.75rem 1.5rem;
-  border: none;
-  border-radius: 8px;
-  background-color: #ef4444;
-  color: #ffffff;
+  top: -15px;
+  left: 55%;
+  background: #aba9a9;
+  color: black !important;
+  border: 3px solid black !important;
+  border-radius: 20px;
   font-size: 1rem;
-  font-weight: 600;
+  font-weight: bold;
   cursor: pointer;
-  transition: background-color 0.3s ease;
+  text-transform: uppercase;
+  transition: all 0.3s ease-in-out;
+  z-index: 1000;
 }
-
 .logout-button-main:hover {
   background-color: #dc2626;
 }
-/* Sidebar Theme Fix */
-.sidebar {
-  background-color: #ffffff; /* Light mode sidebar color */
-  transition: background-color 0.3s ease;
+
+
+  .logout-button {
+    color: black !important;
+    border: none;
+    border-radius: 6px;
+    padding: 8px 14px;
+    font-size: 0.9rem;
+    font-weight: bold;
+    text-transform: uppercase;
+    transition: all 0.3s ease-in-out;
+  }
+  
+
+/* CodeMirror editor specific styles - ensure proper sizing */
+.cm-editor {
+  height: 100% !important;
+  width: 100% !important;
+  font-family: 'Fira Code', monospace;
 }
 
-.dark-theme .sidebar {
-  background-color: #000000; /* Dark mode sidebar color */
+.cm-editor .cm-scroller {
+  font-size: 14px;
+  height: 100% !important;
 }
 
-/* Button Container with Spacing */
-.button-container {
+/* Loading state styling */
+.loading-spinner {
+  animation: spin 1s linear infinite;
+}
+
+@keyframes spin {
+  0% { transform: rotate(0deg); }
+  100% { transform: rotate(360deg); }
+}
+
+/* Chart styles */
+.chart-container {
+  position: relative;
+  height: 200px;
+  width: 100%;
+}
+
+/* Pie chart specific adjustments */
+.pieChart-container {
   display: flex;
-  gap: 1.5rem; /* Increased spacing for better visual balance */
-  margin-top: 1rem;
+  justify-content: center;
+  width: 100%;
+  height: 200px;
 }
 
-.dark-theme .button-container {
-  gap: 1rem; /* Consistent spacing for dark mode */
-}
-
-/* Reset Button */
-.reset-button,
-.analyze-button {
-  padding: 0.75rem 1.5rem;
-  border: none;
-  border-radius: 8px;
-  font-size: 1rem;
-  font-weight: 600;
-  cursor: pointer;
+/* Radar chart specific adjustments */
+.radarChart-container {
   display: flex;
-  align-items: center;
-  gap: 0.5rem;
-  transition: background-color 0.3s ease;
+  justify-content: center;
+  width: 100%;
+  height: 200px;
 }
 
-.reset-button {
-  background-color: #ef4444;
-  color: #ffffff;
+/* Scrollbar styling */
+::-webkit-scrollbar {
+  width: 8px;
+  height: 8px;
 }
 
-.reset-button:hover {
-  background-color: #dc2626;
+::-webkit-scrollbar-track {
+  background: transparent;
 }
 
-.analyze-button {
-  background-color: #3b82f6;
-  color: #ffffff;
+::-webkit-scrollbar-thumb {
+  background-color: rgba(0, 0, 0, 0.2);
+  border-radius: 4px;
 }
 
-.analyze-button:hover {
-  background-color: #2563eb;
+.dark-theme ::-webkit-scrollbar-thumb {
+  background-color: rgba(255, 255, 255, 0.2);
 }
 
-.analyze-button:disabled {
-  background-color: #9ca3af;
-  cursor: not-allowed;
+::-webkit-scrollbar-thumb:hover {
+  background-color: rgba(0, 0, 0, 0.3);
+}
+
+.dark-theme ::-webkit-scrollbar-thumb:hover {
+  background-color: rgba(255, 255, 255, 0.3);
+}
+
+/* Responsive Styles - enhanced for better mobile experience */
+@media (max-width: 992px) {
+  .analysis-grid {
+    grid-template-columns: 1fr;
+  }
+}
+
+@media (max-width: 768px) {
+  .container {
+    padding: 15px;
+  }
+  
+  .button-container {
+    flex-direction: column;
+    gap: 10px;
+  }
+  
+  .analyze-button, .reset-button {
+    width: 100%;
+    min-width: 0;
+  }
+  
+  .theme-toggle {
+    top: 10px;
+    right: 10px;
+  }
+  
+  .editor-container {
+    height: 250px;
+  }
+  
+  .logout-button-main {
+    bottom: 10px;
+    right: 10px;
+  }
+}
+
+/* Fix for any Material-UI component specifics */
+.MuiSelect-select {
+  padding: 5px 8px !important;
+}
+
+.MuiMenuItem-root {
+  min-height: 35px !important;
+}
+
+/* Fix for chart responsiveness */
+canvas {
+  max-width: 100%;
 }

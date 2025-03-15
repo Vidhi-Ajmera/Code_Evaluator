@@ -96,6 +96,8 @@ const languageExtensions = {
 
 const CodeEvaluator = () => {
   const navigate = useNavigate();
+  const [isAuthenticated, setIsAuthenticated] = useState(false);
+  const [username, setUsername] = useState("");
   const [code, setCode] = useState("");
   const [loading, setLoading] = useState(false);
   const [analysisResult, setAnalysisResult] = useState(null);
@@ -112,7 +114,7 @@ const CodeEvaluator = () => {
 
   // Check for token on component mount
   useEffect(() => {
-    const token = localStorage.getItem("token");
+    const token = localStorage.getItem("authToken");
     if (!token) {
       setAlertMessage("Please log in first");
       setAlertSeverity("error");
@@ -140,7 +142,7 @@ const CodeEvaluator = () => {
     setAnalysisResult(null);
 
     try {
-      const token = localStorage.getItem("token");
+      const token = localStorage.getItem("authToken");
       if (!token) {
         setAlertMessage("Please log in first");
         setAlertSeverity("error");
@@ -174,7 +176,7 @@ const CodeEvaluator = () => {
       console.error("Error analyzing code:", error);
       if (error.response) {
         if (error.response.status === 401) {
-          localStorage.removeItem("token");
+          localStorage.removeItem("authToken");
           setAlertMessage("Your session has expired. Please log in again.");
           setAlertSeverity("error");
           setAlertOpen(true);
@@ -204,7 +206,6 @@ const CodeEvaluator = () => {
     window.scrollTo({ top: 0, behavior: "smooth" });
   };
 
-  
   useEffect(() => {
     if (analysisResult && reportRef.current) {
       reportRef.current.scrollIntoView({ behavior: "smooth", block: "start" });
@@ -262,9 +263,11 @@ const CodeEvaluator = () => {
   };
 
   const confirmLogout = () => {
-    localStorage.removeItem("token");
-    setLogoutDialogOpen(false);
-    navigate("/login");
+    localStorage.removeItem("authToken");
+    localStorage.removeItem("userInfo");
+    setIsAuthenticated(false);
+    setUsername("");
+    navigate("/");
   };
 
   const handleCodeChange = (value) => {
@@ -949,7 +952,7 @@ const CodeEvaluator = () => {
   // const themeStyles = { ... }; // Removed unused themeStyles
 
   return (
-    <div className={`container ${darkMode ? "dark-theme" : "light-theme"}`}>
+    <>
       <div
         className="theme-toggle"
         style={{ backgroundColor: darkMode ? "#374151" : "#ffffff" }}
@@ -976,179 +979,208 @@ const CodeEvaluator = () => {
           style={{ color: darkMode ? "#60a5fa" : "#6b7280" }}
         />
       </div>
-
-      <Typography
-        variant="h5"
-        className="title"
-        onClick={scrollToTop}
-        sx={{ color: darkMode ? "#f3f4f6" : "#111827" }}
-      >
-        <FaCode
-          style={{
-            marginRight: "8px",
-            color: darkMode ? "#60a5fa" : "#3b82f6",
-          }}
-        />
-        CodeIQ.ai
-      </Typography>
-
       <div
-        className="editor-container"
-        style={{ borderColor: darkMode ? "#4b5563" : "#e5e7eb" }}
-      >
-        <div
-          className="language-selector"
-          style={{ position: "absolute", top: "8px", left: "8px", zIndex: 10 }}
-        >
-          <Select
-            value={language}
-            onChange={(e) => setLanguage(e.target.value)}
-            variant="outlined"
-            size="small"
-            displayEmpty
-            className="language-dropdown"
-            style={{
-              fontSize: "0.85rem",
-              padding: "3px 8px",
-              borderRadius: "8px",
-              background: darkMode ? "#333" : "white",
-              color: darkMode ? "white" : "black",
-            }}
-          >
-            <MenuItem value="" disabled>
-              Select Language
-            </MenuItem>
-            {languageOptions.map((lang) => (
-              <MenuItem key={lang.value} value={lang.value}>
-                {lang.label}
-              </MenuItem>
-            ))}
-          </Select>
-        </div>
-
-        <Suspense fallback={<div>Loading Editor...</div>}>
-          <CodeMirror
-            value={code}
-            extensions={language ? [languageExtensions[language]] : []}
-            onChange={handleCodeChange}
-            placeholder={
-              language
-                ? "// Write or paste your code here to be analyzed"
-                : "// Select a language first"
-            }
-            theme={darkMode ? oneDark : "light"}
-            readOnly={!language}
-            style={{
-              fontSize: "1rem",
-              height: "100%",
-              color: darkMode ? "#f3f4f6" : "#111827",
-              backgroundColor: darkMode ? "#2d2d2d" : "#ffffff",
-            }}
-          />
-        </Suspense>
-      </div>
-
-      <div className="button-container">
-        <Button
-          className="reset-button"
-          onClick={handleReset}
-          variant="contained"
-          color="error"
-        >
-          <FaRedoAlt className="button-icon" />
-          <span>Reset</span>
-        </Button>
-
-        <Tooltip
-          title="Shortcut: Cmd + Enter (Mac) / Ctrl + Enter (Windows)"
-          arrow
-        >
-          <span>
-            <Button
-              className="analyze-button"
-              onClick={handleAnalyze}
-              disabled={loading}
-              variant="contained"
-              color="primary"
-            >
-              {loading ? (
-                <CircularProgress size={20} style={{ color: "white" }} />
-              ) : (
-                <>
-                  <FaBrain className="button-icon" />
-                  <span>Analyze Code</span>
-                </>
-              )}
-            </Button>
-          </span>
-        </Tooltip>
-      </div>
-
-      {analysisResult && (
-        <div className="analysis-container" ref={reportRef}>
-          <Box sx={{ display: "flex", alignItems: "center", mb: 3 }}>
-            <FaChartPie style={{ marginRight: "10px", color: "#3b82f6" }} />
-            <Typography variant="h5" sx={{ fontWeight: 600 }}>
-              Analysis Report
-            </Typography>
-          </Box>
-          {renderAnalysisResult()}
-        </div>
-      )}
-
-      <Button
-        className="logout-button-main"
-        onClick={handleLogout}
-        variant="contained"
-        color="error"
-        startIcon={<FaSignOutAlt />}
-      >
-        Log Out
-      </Button>
-
-      <Dialog
-        open={logoutDialogOpen}
-        onClose={() => setLogoutDialogOpen(false)}
-        PaperProps={{
-          style: {
-            backgroundColor: darkMode ? "#2d2d2d" : "white",
-            color: darkMode ? "white" : "inherit",
-          },
+        className="language-selector"
+        style={{
+          position: "absolute",
+          top: "8px",
+          left: "8px",
+          zIndex: 10,
         }}
       >
-        <DialogTitle>Confirm Logout</DialogTitle>
-        <DialogContent>
-          <DialogContentText sx={{ color: darkMode ? "#e2e8f0" : "inherit" }}>
-            Are you sure you want to log out?
-          </DialogContentText>
-        </DialogContent>
-        <DialogActions>
-          <Button onClick={() => setLogoutDialogOpen(false)}>Cancel</Button>
+        <Select
+          value={language}
+          onChange={(e) => setLanguage(e.target.value)}
+          variant="outlined"
+          size="small"
+          displayEmpty
+          className="language-dropdown"
+          style={{
+            fontSize: "0.85rem",
+            padding: "3px 8px",
+            borderRadius: "8px",
+            background: darkMode ? "#333" : "white",
+            color: darkMode ? "white" : "black",
+          }}
+        >
+          <MenuItem value="" disabled>
+            Select Language
+          </MenuItem>
+          {languageOptions.map((lang) => (
+            <MenuItem key={lang.value} value={lang.value}>
+              {lang.label}
+            </MenuItem>
+          ))}
+        </Select>
+      </div>
+      {/* Apply dark-theme class to the container */}
+      <div className={`container ${darkMode ? "dark-theme" : "light-theme"}`}>
+        <Typography
+          variant="h5"
+          className="title"
+          onClick={scrollToTop}
+          sx={{
+            color: darkMode ? "#f3f4f6" : "#111827",
+            textAlign: "center",
+            width: "100%", // Ensures it spans the full width for proper centering
+          }}
+        >
+          <FaCode
+            style={{
+              marginRight: "8px",
+              color: darkMode ? "#60a5fa" : "#3b82f6",
+            }}
+          />
+          CodeIQ.ai
+        </Typography>
+
+        {/* Apply dark-theme class to the top-section */}
+        <div
+          className={`top-section ${darkMode ? "dark-theme" : "light-theme"}`}
+        >
+          <div
+            className={`editor-container ${darkMode ? "dark-theme" : ""}`}
+            style={{ borderColor: darkMode ? "#4b5563" : "#e5e7eb" }}
+          >
+            <Suspense fallback={<div>Loading Editor...</div>}>
+              <CodeMirror
+                value={code}
+                extensions={language ? [languageExtensions[language]] : []}
+                onChange={handleCodeChange}
+                placeholder={
+                  language
+                    ? "// Write or paste your code here to be analyzed"
+                    : "// Select a language first"
+                }
+                theme={darkMode ? oneDark : "light"}
+                readOnly={!language}
+                style={{
+                  fontSize: "1rem",
+                  height: "100%",
+                  color: darkMode ? "#f3f4f6" : "#111827",
+                  backgroundColor: darkMode ? "#2d2d2d" : "#ffffff",
+                }}
+              />
+            </Suspense>
+          </div>
+
+          {analysisResult && (
+            <div
+              className={`analysis-container ${darkMode ? "dark-theme" : ""}`}
+              ref={reportRef}
+            >
+              <Box sx={{ display: "flex", alignItems: "center", mb: 3 }}>
+                <FaChartPie
+                  style={{
+                    marginRight: "10px",
+                    color: darkMode ? "#60a5fa" : "#3b82f6",
+                  }}
+                />
+                <Typography
+                  variant="h5"
+                  sx={{
+                    fontWeight: 600,
+                    color: darkMode ? "#f3f4f6" : "#111827",
+                  }}
+                >
+                  Analysis Report
+                </Typography>
+              </Box>
+              {renderAnalysisResult()}
+            </div>
+          )}
+          <div className="button-container">
+            <Button
+              className="reset-button"
+              onClick={handleReset}
+              variant="contained"
+              color="error"
+            >
+              <FaRedoAlt className="button-icon" />
+              <span>Reset</span>
+            </Button>
+
+            <Tooltip
+              title="Shortcut: Cmd + Enter (Mac) / Ctrl + Enter (Windows)"
+              arrow
+            >
+              <span>
+                <Button
+                  className="analyze-button"
+                  onClick={handleAnalyze}
+                  disabled={loading}
+                  variant="contained"
+                  color="primary"
+                >
+                  {loading ? (
+                    <CircularProgress size={20} style={{ color: "white" }} />
+                  ) : (
+                    <>
+                      <FaBrain className="button-icon" />
+                      <span>Analyze Code</span>
+                    </>
+                  )}
+                </Button>
+              </span>
+            </Tooltip>
+          </div>
+
           <Button
-            onClick={confirmLogout}
-            color="error"
+            className="logout-button-main"
+            onClick={handleLogout}
             variant="contained"
-            className="logout-button"
+            color="error"
+            startIcon={<FaSignOutAlt />}
           >
             Log Out
           </Button>
-        </DialogActions>
-      </Dialog>
+          <Dialog
+            open={logoutDialogOpen}
+            onClose={() => setLogoutDialogOpen(false)}
+            PaperProps={{
+              style: {
+                backgroundColor: darkMode ? "#2d2d2d" : "white",
+                color: darkMode ? "white" : "inherit",
+              },
+            }}
+          >
+            <DialogTitle>Confirm Logout</DialogTitle>
+            <DialogContent>
+              <DialogContentText
+                sx={{ color: darkMode ? "#e2e8f0" : "inherit" }}
+              >
+                Are you sure you want to log out?
+              </DialogContentText>
+            </DialogContent>
+            <DialogActions>
+              <Button onClick={() => setLogoutDialogOpen(false)}>Cancel</Button>
+              <Button
+                onClick={confirmLogout}
+                color="error"
+                variant="contained"
+                className="logout-button"
+              >
+                Log Out
+              </Button>
+            </DialogActions>
+          </Dialog>
 
-      <Snackbar
-        open={alertOpen}
-        autoHideDuration={3000}
-        onClose={() => setAlertOpen(false)}
-      >
-        <Alert
-          onClose={() => setAlertOpen(false)}
-          severity={alertSeverity}
-          sx={{ width: "100%" }}
-        >
-          {alertMessage}
-        </Alert>
-      </Snackbar>
-    </div>
+          <Snackbar
+            open={alertOpen}
+            autoHideDuration={3000}
+            onClose={() => setAlertOpen(false)}
+          >
+            <Alert
+              onClose={() => setAlertOpen(false)}
+              severity={alertSeverity}
+              sx={{ width: "100%" }}
+            >
+              {alertMessage}
+            </Alert>
+          </Snackbar>
+        </div>
+      </div>
+    </>
   );
 };
 

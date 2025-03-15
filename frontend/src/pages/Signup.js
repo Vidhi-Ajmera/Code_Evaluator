@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from "react";
+import axios from "axios";
 import { DotLottieReact } from "@lottiefiles/dotlottie-react";
 import { useNavigate, Link } from "react-router-dom";
 import "../styles/Signup.css";
@@ -13,32 +14,28 @@ const SignUpPage = () => {
   const [isLoading, setIsLoading] = useState(false);
   const navigate = useNavigate();
 
-  // Check if user is already logged in
+  // Redirect if user is already logged in
   useEffect(() => {
     const token = localStorage.getItem("authToken");
     if (token) {
-      // User is already logged in, redirect to landing page
-      navigate("/");
+      navigate("/", { replace: true });
     }
   }, [navigate]);
 
   const handleSubmit = async (e) => {
     e.preventDefault();
     setError("");
-    
-    // Validate form
+
     if (!email || !password || !confirmPassword) {
       setError("All fields are required");
       return;
     }
 
-    // Validate passwords match
     if (password !== confirmPassword) {
       setError("Passwords do not match!");
       return;
     }
 
-    // Validate password strength
     if (password.length < 6) {
       setError("Password must be at least 6 characters long");
       return;
@@ -47,29 +44,42 @@ const SignUpPage = () => {
     setIsLoading(true);
 
     try {
-      // Create username from email (everything before @)
-      const username = email.split('@')[0];
-      
-      // Store authentication data
-      localStorage.setItem("authToken", "user-auth-token-" + Date.now());
-      localStorage.setItem(
-        "userInfo",
-        JSON.stringify({
-          email: email,
-          username: username,
-          signupDate: new Date().toISOString(),
-        })
-      );
+      const response = await axios.post("http://localhost:8000/signup", {
+        username: email.split("@")[0],
+        email: email,
+        password: password,
+      });
 
-      // Small delay to make the loading state visible
-      await new Promise((resolve) => setTimeout(resolve, 500));
+      console.log("API Response:", response.data); // Check backend response
 
-      // Explicitly redirect to landing page
-      console.log("Redirecting to landing page");
-      navigate("/", { replace: true });
+      if (response.data) {
+        const { access_token, username } = response.data;
+
+        localStorage.setItem("authToken", access_token);
+        localStorage.setItem(
+          "userInfo",
+          JSON.stringify({
+            email: email,
+            username: username,
+            signupDate: new Date().toISOString(),
+          })
+        );
+
+        await new Promise((resolve) => setTimeout(resolve, 500));
+        navigate("/", { replace: true });
+      } else {
+        setError("Signup successful, but no token received. Please log in.");
+      }
     } catch (err) {
       console.error("Signup error:", err);
-      setError("An error occurred during signup. Please try again.");
+
+      if (err.response) {
+        setError(
+          err.response.data.detail || "Signup failed. Please try again."
+        );
+      } else {
+        setError("Network error. Please try again later.");
+      }
     } finally {
       setIsLoading(false);
     }
@@ -77,7 +87,6 @@ const SignUpPage = () => {
 
   return (
     <div className="signup-container">
-      {/* Left Panel: Lottie Animation */}
       <div className="left-panel">
         <DotLottieReact
           src="https://lottie.host/dc62d82a-bfe7-40da-9a24-f288d2091843/ARq8kqUeNP.lottie"
@@ -86,12 +95,12 @@ const SignUpPage = () => {
         />
       </div>
 
-      {/* Right Panel: Signup Form */}
       <div className="right-panel">
         <h1 className="brand-title" onClick={() => navigate("/")}>
           <FaCode style={{ marginRight: "5px", marginTop: "10px" }} />
           CodeIQ.ai
         </h1>
+
         <div className="signup-box">
           <h2>Create an Account</h2>
           <p style={{ marginBottom: "25px", color: "black" }}>
@@ -112,6 +121,7 @@ const SignUpPage = () => {
                 required
               />
             </div>
+
             <div className="input-group">
               <label htmlFor="password">Password</label>
               <div className="password-wrapper">
@@ -132,6 +142,7 @@ const SignUpPage = () => {
                 </button>
               </div>
             </div>
+
             <div className="input-group">
               <label htmlFor="confirmPassword">Confirm Password</label>
               <div className="password-wrapper">
@@ -145,14 +156,11 @@ const SignUpPage = () => {
                 />
               </div>
             </div>
-            <button 
-              type="submit" 
-              className="signup-btn" 
-              disabled={isLoading}
-              onClick={handleSubmit} // Added explicit click handler
-            >
+
+            <button type="submit" className="signup-btn" disabled={isLoading}>
               {isLoading ? "Signing Up..." : "Sign Up Now"}
             </button>
+
             <p className="login-text">
               Already have an account? <Link to="/login">Log In</Link>
             </p>

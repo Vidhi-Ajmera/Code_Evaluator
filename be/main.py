@@ -25,21 +25,16 @@ app.add_middleware(
     allow_headers=["*"],
 )
 
-# MongoDB connection - improved with better error handling and connection string verification
+# MongoDB connection
 MONGO_URI = os.getenv("MONGO_URI")
 if not MONGO_URI:
     raise ValueError("MONGO_URI environment variable is not set")
 
-# Remove trailing slash if present (this can cause connection issues)
 if MONGO_URI.endswith('/'):
     MONGO_URI = MONGO_URI[:-1]
 
-# Try to connect to MongoDB with proper exception handling
 try:
-    client = MongoClient(MONGO_URI, 
-                        connectTimeoutMS=30000,
-                        serverSelectionTimeoutMS=5000)  # Add server selection timeout
-    # Verify connection by attempting a server info command
+    client = MongoClient(MONGO_URI, connectTimeoutMS=30000, serverSelectionTimeoutMS=5000)
     client.admin.command('ping')
     db = client["coding_platform"]
     users_collection = db["users"]
@@ -47,10 +42,8 @@ try:
     print("Connected to MongoDB successfully!")
 except Exception as e:
     print(f"Failed to connect to MongoDB: {e}")
-    # Don't raise an exception here, let the application start anyway
-    # We'll handle connection errors in the endpoints
 
-# Azure OpenAI setup with better error handling
+# Azure OpenAI setup
 try:
     openai_api_key = os.getenv("OPENAI_API_KEY")
     openai_endpoint = os.getenv("OPENAI_ENDPOINT")
@@ -67,12 +60,12 @@ try:
     print("Azure OpenAI client initialized successfully!")
 except Exception as e:
     print(f"Failed to initialize Azure OpenAI client: {e}")
-    openai_client = None  # Set to None instead of raising exception
+    openai_client = None
 
 # JWT Configuration
-SECRET_KEY = os.getenv("SECRET_KEY", "your-secret-key")  # Get from environment or use default
+SECRET_KEY = os.getenv("SECRET_KEY", "your-secret-key")
 ALGORITHM = "HS256"
-ACCESS_TOKEN_EXPIRE_MINUTES = 60  # Extended token lifespan
+ACCESS_TOKEN_EXPIRE_MINUTES = 6000
 
 # OAuth2 Scheme
 oauth2_scheme = OAuth2PasswordBearer(tokenUrl="token")
@@ -89,20 +82,17 @@ class LoginUser(BaseModel):
 
 class Code(BaseModel):
     code: str
-    language: str  # "java", "python", "c++"
-    course_level:  Optional[str] = None  # "freshman", "sophomore", "junior", "senior", "graduate"
+    language: str
+    course_level: Optional[str] = None
     assignment_description: Optional[str] = None
     student_id: Optional[str] = None
     assignment_id: Optional[str] = None
-    previous_submissions: Optional[List[str]] = None  # IDs of previous submissions by this student
+    previous_submissions: Optional[List[str]] = None
 
 # JWT Functions
 def create_access_token(data: dict, expires_delta: timedelta = None):
     to_encode = data.copy()
-    if expires_delta:
-        expire = datetime.utcnow() + expires_delta
-    else:
-        expire = datetime.utcnow() + timedelta(minutes=15)
+    expire = datetime.utcnow() + (expires_delta or timedelta(minutes=15))
     to_encode.update({"exp": expire})
     encoded_jwt = jwt.encode(to_encode, SECRET_KEY, algorithm=ALGORITHM)
     return encoded_jwt
@@ -122,17 +112,15 @@ def verify_token(token: str = Depends(oauth2_scheme)):
         raise credentials_exception
     return email
 
-# Endpoints with improved error handling
+# Endpoints
 @app.get("/")
 async def root():
-    # Check MongoDB connection
     try:
         client.admin.command('ping')
         db_status = "Connected"
     except Exception as e:
         db_status = f"Disconnected: {str(e)}"
     
-    # Check OpenAI client
     openai_status = "Available" if openai_client else "Unavailable"
     
     return {
@@ -151,9 +139,20 @@ async def signup(user: User):
             raise HTTPException(status_code=400, detail="Email already registered")
         
         # Insert new user
-        result = users_collection.insert_one(user.dict())
+        user_data = user.dict()
+        user_data["created_at"] = datetime.utcnow()
+        result = users_collection.insert_one(user_data)
+        
+        # Generate access token
+        access_token_expires = timedelta(minutes=ACCESS_TOKEN_EXPIRE_MINUTES)
+        access_token = create_access_token(
+            data={"sub": user.email}, expires_delta=access_token_expires
+        )
         
         return {
+            "access_token": access_token,
+            "token_type": "bearer",
+            "username": user.username,
             "message": "User created successfully",
             "user_id": str(result.inserted_id)
         }
@@ -200,7 +199,6 @@ async def login(user: LoginUser):
 @app.post("/submit_code")
 async def submit_code(code: Code, email: str = Depends(verify_token)):
     if not openai_client:
-        # Fall back to mock analysis if OpenAI is not available
         mock_analysis = generate_mock_analysis(code.code, code.language)
         return {
             "id": "mock-123",
@@ -214,74 +212,74 @@ async def submit_code(code: Code, email: str = Depends(verify_token)):
 
         ---
 
-        ### **Key Responsibilities**
+        ### *Key Responsibilities*
 
-        1. **Detect AI-Generated Code**:
+        1. *Detect AI-Generated Code*:
            - Identify patterns typical of AI-generated code (e.g., ChatGPT, Claude, GitHub Copilot).
            - Look for overly consistent formatting, excessive or unnatural comments, and generic variable/function names.
            - Detect code that is overly optimized or uses advanced techniques inconsistent with the student's course level.
            - Flag code that lacks common mistakes or shows an unnatural level of perfection.
 
-        2. **Identify Copied Code**:
+        2. *Identify Copied Code*:
            - Recognize code snippets copied from common online sources (e.g., Stack Overflow, GitHub, GeeksforGeeks).
            - Compare the code against known algorithms, functions, or solutions from tutorials or public repositories.
            - Detect inconsistent coding styles, mixed conventions, or abrupt changes in logic that suggest multiple sources.
            - Use contextual clues (e.g., comments, variable names) to trace potential sources.
 
-        3. **Assess Originality**:
+        3. *Assess Originality*:
            - Evaluate the likelihood that the code was written by the student based on the course level and assignment description.
            - Identify common mistakes, incomplete implementations, or lack of understanding in the code.
            - Check for code that is too simplistic, overly generic, or lacks originality.
            - Consider the student's coding style, if previously available, for consistency.
 
-        4. **Provide Detailed Analysis**:
+        4. *Provide Detailed Analysis*:
            - Break down the code into logical sections (e.g., functions, loops, classes) and analyze each part for plagiarism.
            - Provide a confidence score (0-100) for your assessment, considering the strength of evidence.
            - Highlight specific lines or blocks of code that are suspicious, with clear explanations.
 
-        5. **Generate Recommendations**:
+        5. *Generate Recommendations*:
            - Suggest follow-up questions to verify the student's understanding of the code.
            - Provide actionable recommendations for improving the originality and quality of the code.
 
         ---
 
-        ### **Evaluation Parameters**
+        ### *Evaluation Parameters*
 
         Your analysis should also consider the following evaluation parameters from the AI-based Code Evaluator:
 
-        1. **Code Correctness**:
+        1. *Code Correctness*:
            - Check if the code executes correctly without errors.
            - Verify if the code handles exceptions properly.
            - Compare expected vs. actual output for given test cases.
 
-        2. **Code Efficiency & Performance**:
+        2. *Code Efficiency & Performance*:
            - Estimate time complexity using Big-O notation.
            - Measure memory consumption and execution time.
            - Identify performance bottlenecks.
 
-        3. **Code Security Analysis**:
+        3. *Code Security Analysis*:
            - Detect SQL injection vulnerabilities.
            - Check for cross-site scripting (XSS) risks.
            - Identify hardcoded secrets (e.g., API keys, passwords).
            - Scan for outdated or vulnerable dependencies.
 
-        4. **Code Readability & Maintainability**:
+        4. *Code Readability & Maintainability*:
            - Assess code style and documentation.
            - Evaluate function and variable naming conventions.
            - Analyze cyclomatic complexity and suggest improvements.
 
-        5. **Plagiarism Detection & Code Similarity Analysis**:
+        5. *Plagiarism Detection & Code Similarity Analysis*:
            - Perform exact code matching using hashes.
            - Analyze structural similarity using AST (Abstract Syntax Tree).
            - Use NLP-based similarity detection (e.g., SimHash, MinHash) to detect paraphrased code.
 
         ---
 
-        ### **Output Format**
+        ### *Output Format*
 
         Your response must be a structured JSON object with the following fields:
 
-        ```json
+        json
         {
             "plagiarism_detected": true/false,
             "confidence_score": 0-100,
@@ -325,23 +323,23 @@ async def submit_code(code: Code, email: str = Depends(verify_token)):
                 }
             }
         }
-        ```
+        
         """
 
         # User message with context
         user_message = f"""
         Analyze this code for plagiarism and evaluate it based on the following parameters:
 
-        ```
+        
         {code.code}
-        ```
+        
 
-        **Context**:
+        *Context*:
         - Language: {code.language}
         - Course Level: {code.course_level if code.course_level else "Not provided"}
         - Assignment Description: {code.assignment_description if code.assignment_description else "Not provided"}
 
-        **Instructions**:
+        *Instructions*:
         1. Break down the code into sections and analyze each part for plagiarism.
         2. Provide a confidence score (0-100) for your assessment.
         3. Highlight specific lines or blocks of code that are suspicious.
@@ -353,11 +351,10 @@ async def submit_code(code: Code, email: str = Depends(verify_token)):
         5. Suggest follow-up questions to verify the student's understanding.
         6. Provide recommendations for improving originality, security, and code quality.
 
-        **Output Format**:
+        *Output Format*:
         Your response should be in the structured JSON format provided in the system prompt.
         """
 
-        # Call OpenAI API with better error handling
         try:
             response = openai_client.chat.completions.create(
                 model=os.getenv("OPENAI_DEPLOYMENT_NAME", "gpt-35-turbo"),
@@ -366,19 +363,17 @@ async def submit_code(code: Code, email: str = Depends(verify_token)):
                     {"role": "user", "content": user_message}
                 ],
                 response_format={"type": "json_object"},
-                temperature=0.2  # Lower temperature for more consistent analysis
+                temperature=0.2
             )
             plagiarism_result = json.loads(response.choices[0].message.content)
         except Exception as e:
             raise HTTPException(status_code=502, detail=f"OpenAI API error: {str(e)}")
 
-        # Save the submission with metadata
         code_data = code.dict()
         code_data["plagiarism_analysis"] = plagiarism_result
         code_data["submission_timestamp"] = datetime.utcnow()
         code_data["submitter_email"] = email
 
-        # Insert into MongoDB with better error handling
         try:
             result = codes_collection.insert_one(code_data)
             return {
@@ -386,7 +381,6 @@ async def submit_code(code: Code, email: str = Depends(verify_token)):
                 "plagiarism_analysis": plagiarism_result
             }
         except Exception as e:
-            # Return the analysis but note that storage failed
             return {
                 "id": None,
                 "plagiarism_analysis": plagiarism_result,

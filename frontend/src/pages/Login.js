@@ -1,13 +1,14 @@
 import React, { useState } from "react";
-import { useNavigate } from "react-router-dom"; // Added for navigation
+import { useNavigate } from "react-router-dom";
 import { DotLottieReact } from "@lottiefiles/dotlottie-react";
-import axios from "axios"; // Added for API requests
+import axios from "axios";
 import { auth, provider, signInWithPopup } from "../components/firebase";
+import { sendPasswordResetEmail } from "firebase/auth";
 import "../../src/styles/Login.css";
 import { FaCode } from "react-icons/fa";
 
 const LoginPage = () => {
-  const navigate = useNavigate(); // Navigation hook
+  const navigate = useNavigate();
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [showPassword, setShowPassword] = useState(false);
@@ -21,10 +22,17 @@ const LoginPage = () => {
         password,
       });
 
+      console.log("Login Response:", response); // ✅ Check server response
+
       if (response.data.access_token) {
-        localStorage.setItem("token", response.data.access_token); // Save token
+        console.log(
+          "Token Generated (Email/Password):",
+          response.data.access_token
+        ); // ✅ Token Debug
+        localStorage.setItem("authToken", response.data.access_token);
+        localStorage.setItem("userInfo", JSON.stringify({ email }));
         alert("Login successful!");
-        navigate("/code-evaluator"); // Navigate to CodeEvaluator page
+        navigate("/");
       }
     } catch (error) {
       console.error("Login failed:", error);
@@ -38,9 +46,10 @@ const LoginPage = () => {
       const user = result.user;
 
       console.log("User logged in:", user);
-      localStorage.setItem("user", JSON.stringify(user)); // Save Google user data
+      localStorage.setItem("authToken", user.accessToken); // FIXED: Correct Token Key
+      localStorage.setItem("userInfo", JSON.stringify({ email: user.email })); // Save Google User Info
       alert(`Welcome ${user.displayName}!`);
-      navigate("/code-evaluator"); // Navigate to CodeEvaluator page
+      navigate("/");
     } catch (error) {
       console.error("Error during Google login:", error);
 
@@ -52,6 +61,26 @@ const LoginPage = () => {
         alert("Network error. Please check your internet connection.");
       } else {
         alert("Login failed. Please try again.");
+      }
+    }
+  };
+
+  const handleForgotPassword = async () => {
+    if (!email) {
+      alert("Please enter your email to reset password.");
+      return;
+    }
+    try {
+      await sendPasswordResetEmail(auth, email);
+      alert("Password reset email sent! Please check your inbox.");
+    } catch (error) {
+      console.error("Error sending password reset email:", error);
+      if (error.code === "auth/user-not-found") {
+        alert("No user found with this email.");
+      } else if (error.code === "auth/invalid-email") {
+        alert("Invalid email address.");
+      } else {
+        alert("Failed to send password reset email. Please try again.");
       }
     }
   };
@@ -72,15 +101,6 @@ const LoginPage = () => {
         </h1>
         <div className="login-box">
           <h2>Welcome Back!</h2>
-          <p
-            style={{
-              marginBottom: "25px",
-              color: "black",
-              fontSize: "1.1rem",
-            }}
-          >
-            Log in to your account to continue.
-          </p>
           <form onSubmit={handleSubmit} className="login-form">
             <div className="input-group">
               <label>Email</label>
@@ -92,6 +112,7 @@ const LoginPage = () => {
                 required
               />
             </div>
+
             <div className="input-group">
               <label>Password</label>
               <div className="password-wrapper">
@@ -111,9 +132,21 @@ const LoginPage = () => {
                 </button>
               </div>
             </div>
+
+            <p className="forgot-password-text">
+              <button
+                type="button"
+                onClick={handleForgotPassword}
+                className="forgot-password-btn"
+              >
+                Forgot Password?
+              </button>
+            </p>
+
             <button type="submit" className="login-btn">
               Login Now
             </button>
+
             <div className="or-separator">
               <span>OR</span>
             </div>
