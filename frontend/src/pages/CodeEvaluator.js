@@ -78,7 +78,7 @@ ChartJS.register(
   LineElement
 );
 
-const API_URL = "http://localhost:8000/submit_code"; // Ensure this matches your backend URL
+const API_URL = "https://code-evaluator-v-ajm.vercel.app/submit_code"; // Ensure this matches your backend URL
 
 const languageOptions = [
   { label: "Python", value: "python" },
@@ -121,11 +121,14 @@ const CodeEvaluator = () => {
     }
 
     try {
-      const response = await axios.get(`http://localhost:8000/protected`, {
-        headers: {
-          Authorization: `Bearer ${token}`,
-        },
-      });
+      const response = await axios.get(
+        `https://code-evaluator-v-ajm.vercel.app/protected`,
+        {
+          headers: {
+            Authorization: `Bearer ${token}`,
+          },
+        }
+      );
 
       console.log("Protected Data:", response.data);
       // alert("Access granted! Data fetched successfully.");

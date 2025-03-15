@@ -53,11 +53,14 @@ const SignUpPage = () => {
     setIsLoading(true);
 
     try {
-      const response = await axios.post("http://localhost:8000/signup", {
-        username: email.split("@")[0],
-        email: email,
-        password: password,
-      });
+      const response = await axios.post(
+        "https://code-evaluator-v-ajm.vercel.app/signup",
+        {
+          username: email.split("@")[0],
+          email: email,
+          password: password,
+        }
+      );
 
       console.log("API Response:", response.data); // Check backend response
 

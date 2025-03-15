@@ -17,10 +17,13 @@ const LoginPage = () => {
     e.preventDefault();
 
     try {
-      const response = await axios.post("http://localhost:8000/login", {
-        email,
-        password,
-      });
+      const response = await axios.post(
+        "https://code-evaluator-v-ajm.vercel.app/login",
+        {
+          email,
+          password,
+        }
+      );
 
       console.log("Login Response:", response); // ✅ Check server response
 
