@@ -4,6 +4,7 @@ import { DotLottieReact } from "@lottiefiles/dotlottie-react";
 import { useNavigate, Link } from "react-router-dom";
 import "../styles/Signup.css";
 import { FaCode } from "react-icons/fa";
+import PasswordStrengthChecker from "../components/PasswordStrengthChecker";
 
 const SignUpPage = () => {
   const [email, setEmail] = useState("");
@@ -22,6 +23,15 @@ const SignUpPage = () => {
     }
   }, [navigate]);
 
+  
+  // Password rules checking for enabling/disabling submit button
+  const isPasswordValid =
+    password.length >= 8 &&
+    /[a-z]/.test(password) &&
+    /[A-Z]/.test(password) &&
+    /\d/.test(password) &&
+    /[@$!%*?&#]/.test(password);
+
   const handleSubmit = async (e) => {
     e.preventDefault();
     setError("");
@@ -36,11 +46,14 @@ const SignUpPage = () => {
       return;
     }
 
+<<<<<<< HEAD
     if (password.length < 6) {
       setError("Password must be at least 6 characters long");
       return;
     }
 
+=======
+>>>>>>> 53e9c81b9179dcb07954a4befcdb145cb7d51bfe
     setIsLoading(true);
 
     try {
@@ -141,6 +154,8 @@ const SignUpPage = () => {
                   {showPassword ? "👁️" : "🔒"}
                 </button>
               </div>
+                   {/* Show rules if password doesn't match all */}
+                    <PasswordStrengthChecker password={password} />
             </div>
 
             <div className="input-group">
@@ -156,9 +171,21 @@ const SignUpPage = () => {
                 />
               </div>
             </div>
+<<<<<<< HEAD
 
             <button type="submit" className="signup-btn" disabled={isLoading}>
               {isLoading ? "Signing Up..." : "Sign Up Now"}
+=======
+           <button
+                  type="submit"
+                  className={`signup-btn ${
+                  !isPasswordValid || password !== confirmPassword ? "disabled-btn" : ""
+                  }`}
+                  disabled={!isPasswordValid || password !== confirmPassword || isLoading}
+                  onClick={handleSubmit}
+                  >
+                  {isLoading ? "Signing Up..." : "Sign Up Now"}
+>>>>>>> 53e9c81b9179dcb07954a4befcdb145cb7d51bfe
             </button>
 
             <p className="login-text">

@@ -119,6 +119,62 @@
   font-size: 1.1rem;
 }
 
+/* Password Strength Checker Styles */
+.password-strength-container {
+  margin-top: 10px;
+  background: #fff8e1; 
+  border: 1px solid #ffd54f; 
+  padding: 12px 15px;
+  border-radius: 8px;
+  color: #333;
+  font-size: 0.6rem;
+  box-shadow: 2px 4px 8px rgba(0, 0, 0, 0.1);
+  animation: fadeIn 0.4s ease-in-out;
+}
+
+.password-warning {
+  margin: 0;
+  font-weight: 600;
+  color: #e65100; 
+  margin-bottom: 5px;
+}
+
+.password-rules {
+  margin: 0;
+  padding-left: 20px;
+}
+
+.password-rules li {
+  list-style: disc;
+  margin-bottom: 5px;
+  line-height: 1.1;
+  color: #444;
+}
+
+.password-wrapper {
+  position: relative;
+  width: 100%;
+}
+
+.password-wrapper input {
+  padding-right: 45px;
+}
+
+.toggle-password {
+  position: absolute;
+  background: none;
+  border: none;
+  cursor: pointer;
+  font-size: 1.2rem;
+  color: #555;
+  outline: none;
+  transition: color 0.3s ease;
+}
+
+.toggle-password:hover {
+  color: #000;
+}
+
 /* Responsive Breakpoints */
 @media (max-width: 1024px) {
   .right-panel h1 {

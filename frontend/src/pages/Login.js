@@ -65,6 +65,7 @@ const LoginPage = () => {
     }
   };
 
+<<<<<<< HEAD
   const handleForgotPassword = async () => {
     if (!email) {
       alert("Please enter your email to reset password.");
@@ -84,6 +85,28 @@ const LoginPage = () => {
       }
     }
   };
+=======
+// Forgot Password Handler
+const handleForgotPassword = async () => {
+  if (!email) {
+    alert("Please enter your email to reset password.");
+    return;
+  }
+  try {
+    await sendPasswordResetEmail(auth, email);
+    alert("Password reset email sent! Please check your inbox.");
+  } catch (error) {
+    console.error("Error sending password reset email:", error);
+    if (error.code === "auth/user-not-found") {
+      alert("No user found with this email.");
+    } else if (error.code === "auth/invalid-email") {
+      alert("Invalid email address.");
+    } else {
+      alert("Failed to send password reset email. Please try again.");
+    }
+  }
+};
+>>>>>>> 53e9c81b9179dcb07954a4befcdb145cb7d51bfe
 
   return (
     <div className="login-container">
@@ -133,6 +156,7 @@ const LoginPage = () => {
               </div>
             </div>
 
+<<<<<<< HEAD
             <p className="forgot-password-text">
               <button
                 type="button"
@@ -141,6 +165,13 @@ const LoginPage = () => {
               >
                 Forgot Password?
               </button>
+=======
+            {/* Forgot Password Link */}
+            <p className="forgot-password-text">
+            <button type="button" onClick={handleForgotPassword} className="forgot-password-btn">
+              Forgot Password?
+            </button>
+>>>>>>> 53e9c81b9179dcb07954a4befcdb145cb7d51bfe
             </p>
 
             <button type="submit" className="login-btn">
