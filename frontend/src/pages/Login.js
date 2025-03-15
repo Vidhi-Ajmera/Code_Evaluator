@@ -46,7 +46,7 @@ const LoginPage = () => {
       const user = result.user;
 
       console.log("User logged in:", user);
-      localStorage.setItem("authToken", user.accessToken); // FIXED: Correct Token Key
+      localStorage.setItem("authToken", user.access_token); // FIXED: Correct Token Key
       localStorage.setItem("userInfo", JSON.stringify({ email: user.email })); // Save Google User Info
       alert(`Welcome ${user.displayName}!`);
       navigate("/");

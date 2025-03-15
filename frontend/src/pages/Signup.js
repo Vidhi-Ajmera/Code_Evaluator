@@ -23,7 +23,6 @@ const SignUpPage = () => {
     }
   }, [navigate]);
 
-  
   // Password rules checking for enabling/disabling submit button
   const isPasswordValid =
     password.length >= 8 &&
@@ -151,8 +150,8 @@ const SignUpPage = () => {
                   {showPassword ? "👁️" : "🔒"}
                 </button>
               </div>
-                   {/* Show rules if password doesn't match all */}
-                    <PasswordStrengthChecker password={password} />
+              {/* Show rules if password doesn't match all */}
+              <PasswordStrengthChecker password={password} />
             </div>
 
             <div className="input-group">

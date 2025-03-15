@@ -71,7 +71,7 @@ ALGORITHM = "HS256"
 ACCESS_TOKEN_EXPIRE_MINUTES = 6000
 
 # OAuth2 Scheme
-oauth2_scheme = OAuth2PasswordBearer(tokenUrl="token")
+oauth2_scheme = OAuth2PasswordBearer(tokenUrl="login")
 
 # Models
 class User(BaseModel):
@@ -112,19 +112,19 @@ def create_access_token(data: dict, expires_delta: timedelta = None):
     return encoded_jwt
 
 def verify_token(token: str = Depends(oauth2_scheme)):
-    credentials_exception = HTTPException(
-        status_code=status.HTTP_401_UNAUTHORIZED,
-        detail="Could not validate credentials",
-        headers={"WWW-Authenticate": "Bearer"},
-    )
     try:
         payload = jwt.decode(token, SECRET_KEY, algorithms=[ALGORITHM])
-        email: str = payload.get("sub")
-        if email is None:
-            raise credentials_exception
+        return payload
     except JWTError:
-        raise credentials_exception
-    return email
+        raise HTTPException(
+            status_code=status.HTTP_401_UNAUTHORIZED,
+            detail="Invalid or expired token",
+            headers={"WWW-Authenticate": "Bearer"},
+        )
+        
+@app.get("/protected")
+async def protected_route(current_user: dict = Depends(verify_token)):
+    return {"message": "Access granted", "user": current_user}
 
 # Mock function for when OpenAI is not available
 def generate_mock_analysis(code, language):
@@ -209,14 +209,12 @@ async def signup(user: User):
         )
         
         return {
-            "access_token": access_token,
-            "token_type": "bearer",
-            "username": user.username,
-            "message": "User created successfully",
-            "user_id": str(result.inserted_id)
-        }
+            "access_token": access_token, 
+            "username": user.username
+            }
     except Exception as e:
         raise HTTPException(status_code=500, detail=f"Database error: {str(e)}")
+
 
 @app.post("/token")
 async def login_for_access_token(form_data: OAuth2PasswordRequestForm = Depends()):

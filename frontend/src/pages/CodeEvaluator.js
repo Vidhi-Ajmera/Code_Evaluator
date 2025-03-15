@@ -112,6 +112,37 @@ const CodeEvaluator = () => {
   const reportRef = useRef(null);
   // const editorRef = useRef(null); // Removed unused editorRef
 
+  const fetchProtectedData = async () => {
+    const token = localStorage.getItem("authToken");
+
+    if (!token) {
+      alert("No token found. Please log in.");
+      return;
+    }
+
+    try {
+      const response = await axios.get(`http://localhost:8000/protected`, {
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
+      });
+
+      console.log("Protected Data:", response.data);
+      // alert("Access granted! Data fetched successfully.");
+    } catch (error) {
+      console.error("Error fetching protected data:", error);
+      if (error.response && error.response.status === 401) {
+        alert("Session expired. Please log in again.");
+        localStorage.removeItem("authToken");
+      } else {
+        alert("Failed to fetch data. Please try again.");
+      }
+    }
+  };
+
+  // Call the function whenever you want to access the protected route:
+  fetchProtectedData();
+
   // Check for token on component mount
   useEffect(() => {
     const token = localStorage.getItem("authToken");
