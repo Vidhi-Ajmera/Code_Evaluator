@@ -1,4 +1,4 @@
-from fastapi import FastAPI, HTTPException, Depends, status
+from fastapi import FastAPI, HTTPException, Depends, status, Request
 from pydantic import BaseModel
 from pymongo import MongoClient
 from openai import AzureOpenAI
@@ -10,16 +10,18 @@ from fastapi.security import OAuth2PasswordBearer, OAuth2PasswordRequestForm
 import json
 from typing import Optional, List
 from fastapi.middleware.cors import CORSMiddleware
+import bcrypt
+import uvicorn
 
 # Load environment variables
 load_dotenv()
 
 app = FastAPI()
 
-# Enable CORS
+# Enable CORS - Update this with your frontend URL if needed
 app.add_middleware(
     CORSMiddleware,
-    allow_origins=["http://localhost:3000"],  # Replace with your frontend URL
+    allow_origins=["http://localhost:3000", "http://localhost:5173", "*"],  # Add your frontend URL
     allow_credentials=True,
     allow_methods=["*"],
     allow_headers=["*"],
@@ -34,8 +36,8 @@ if MONGO_URI.endswith('/'):
     MONGO_URI = MONGO_URI[:-1]
 
 try:
-    client = MongoClient(MONGO_URI, connectTimeoutMS=30000,socketTimeoutMS=30000, serverSelectionTimeoutMS=5000,retryWrites=True,
-        w="majority")
+    client = MongoClient(MONGO_URI, connectTimeoutMS=30000, socketTimeoutMS=30000, 
+                        serverSelectionTimeoutMS=5000, retryWrites=True, w="majority")
     client.admin.command('ping')
     db = client["coding_platform"]
     users_collection = db["users"]
@@ -80,7 +82,7 @@ class User(BaseModel):
 class LoginUser(BaseModel):
     email: str
     password: str
-
+    
 class Code(BaseModel):
     code: str
     language: str
@@ -123,6 +125,47 @@ def verify_token(token: str = Depends(oauth2_scheme)):
     except JWTError:
         raise credentials_exception
     return email
+
+# Mock function for when OpenAI is not available
+def generate_mock_analysis(code, language):
+    return {
+        "plagiarism_detected": False,
+        "confidence_score": 75,
+        "likely_source": "Original student work",
+        "explanation": "This is a mock analysis as OpenAI is unavailable",
+        "suspicious_elements": [],
+        "red_flags": [],
+        "verification_questions": ["Can you explain how this code works?"],
+        "recommendations": ["Add more comments to improve readability"],
+        "evaluation_metrics": {
+            "code_correctness": {
+                "status": "Passed",
+                "test_cases": "5",
+                "failed_cases": "0"
+            },
+            "code_efficiency": {
+                "time_complexity": "O(n)",
+                "memory_usage": "8MB",
+                "execution_time": "100ms"
+            },
+            "code_security": {
+                "issues_found": [],
+                "recommendations": []
+            },
+            "code_readability": {
+                "score": 7.5,
+                "suggestions": ["Add more documentation"]
+            }
+        }
+    }
+
+# Debug middleware to log requests
+@app.middleware("http")
+async def log_requests(request: Request, call_next):
+    print(f"Request: {request.method} {request.url}")
+    response = await call_next(request)
+    print(f"Response Status: {response.status_code}")
+    return response
 
 # Endpoints
 @app.get("/")
@@ -178,6 +221,8 @@ async def signup(user: User):
 @app.post("/token")
 async def login_for_access_token(form_data: OAuth2PasswordRequestForm = Depends()):
     try:
+        # OAuth2PasswordRequestForm uses 'username' field, but we're storing email
+        # So we use form_data.username as the email
         db_user = users_collection.find_one({"email": form_data.username})
         if not db_user or not verify_password(form_data.password, db_user["password"]):
             raise HTTPException(
@@ -409,5 +454,4 @@ async def submit_code(code: Code, email: str = Depends(verify_token)):
         raise HTTPException(status_code=500, detail=f"Plagiarism detection error: {str(e)}")
 
 if __name__ == "__main__":
-    import uvicorn
     uvicorn.run(app, host="0.0.0.0", port=8000)

@@ -1,9 +1,23 @@
 import React, { useState, useEffect, useRef } from "react";
 import Split from "react-split";
 import Editor from "@monaco-editor/react";
-import { FaPlay, FaClock, FaRedo, FaSun, FaMoon, FaSignOutAlt } from "react-icons/fa";
+import {
+  FaPlay,
+  FaClock,
+  FaRedo,
+  FaSun,
+  FaMoon,
+  FaSignOutAlt,
+} from "react-icons/fa";
 import Switch from "@mui/material/Switch";
-import { Dialog, DialogTitle, DialogContent, DialogActions, DialogContentText, Button } from '@mui/material';
+import {
+  Dialog,
+  DialogTitle,
+  DialogContent,
+  DialogActions,
+  DialogContentText,
+  Button,
+} from "@mui/material";
 import "../styles/TestEvaluator.css";
 import { useNavigate } from "react-router-dom";
 
@@ -154,7 +168,7 @@ const CodeEvaluator = () => {
           b. Write a recursive function which counts the number of subsets of
           the array which sum to target. Print the value returned.
         </p>
-        
+
         <h2>Sample Input:</h2>
         <pre className="example-box">3\n1\n2\n3\n3</pre>
         <h2>Sample Output:</h2>
@@ -164,14 +178,23 @@ const CodeEvaluator = () => {
           <FaSignOutAlt /> Log Out
         </Button>
 
-        <Dialog open={logoutDialogOpen} onClose={() => setLogoutDialogOpen(false)}>
+        <Dialog
+          open={logoutDialogOpen}
+          onClose={() => setLogoutDialogOpen(false)}
+        >
           <DialogTitle>Confirm Logout</DialogTitle>
           <DialogContent>
-            <DialogContentText>Are you sure you want to log out?</DialogContentText>
+            <DialogContentText>
+              Are you sure you want to log out?
+            </DialogContentText>
           </DialogContent>
           <DialogActions>
             <Button onClick={() => setLogoutDialogOpen(false)}>Cancel</Button>
-            <Button onClick={confirmLogout} color="primary" className="logout-button">
+            <Button
+              onClick={confirmLogout}
+              color="primary"
+              className="logout-button"
+            >
               Log Out
             </Button>
           </DialogActions>
@@ -196,15 +219,35 @@ const CodeEvaluator = () => {
           <div className="controls">
             <div className="theme-toggle">
               <FaSun className={`theme-icon ${!darkMode ? "rotate" : ""}`} />
-              <Switch checked={darkMode} onChange={toggleTheme} color="default" />
+              <Switch
+                checked={darkMode}
+                onChange={toggleTheme}
+                color="default"
+              />
               <FaMoon className={`theme-icon ${darkMode ? "rotate" : ""}`} />
             </div>
-            <FaClock className="icon" onClick={toggleTimer} style={{ cursor: "pointer" }} />
-            {isTimerRunning && <span className="timer-display">{formatTime(time)}</span>}
-            {isTimerRunning && <button className="stop-btn" onClick={toggleTimer}>Stop</button>}
-            <button onClick={handleRun} className="run-btn"><FaPlay className="icon-btn" /> Run</button>
-            <button onClick={handleSubmit} className="submit-btn">Submit</button>
-            <button onClick={handleReset} className="reset-btn"><FaRedo className="icon-btn" /> Reset</button>
+            <FaClock
+              className="icon"
+              onClick={toggleTimer}
+              style={{ cursor: "pointer" }}
+            />
+            {isTimerRunning && (
+              <span className="timer-display">{formatTime(time)}</span>
+            )}
+            {isTimerRunning && (
+              <button className="stop-btn" onClick={toggleTimer}>
+                Stop
+              </button>
+            )}
+            <button onClick={handleRun} className="run-btn">
+              <FaPlay className="icon-btn" /> Run
+            </button>
+            <button onClick={handleSubmit} className="submit-btn">
+              Submit
+            </button>
+            <button onClick={handleReset} className="reset-btn">
+              <FaRedo className="icon-btn" /> Reset
+            </button>
           </div>
         </div>
 
@@ -212,7 +255,11 @@ const CodeEvaluator = () => {
           <Editor
             defaultLanguage={language !== "select" ? language : "javascript"}
             theme={theme}
-            value={language === "select" ? "Select a language you want to code" : code}
+            value={
+              language === "select"
+                ? "Select a language you want to code"
+                : code
+            }
             onChange={(value) => language !== "select" && setCode(value)}
             onMount={handleEditorMount}
             options={{ fontSize: 13, readOnly: language === "select" }}
@@ -222,7 +269,11 @@ const CodeEvaluator = () => {
         <div className="console-area">
           <div className="console-box">
             <h2>Provide Custom Input</h2>
-            <textarea className="console-input" value={input} onChange={(e) => setInput(e.target.value)} />
+            <textarea
+              className="console-input"
+              value={input}
+              onChange={(e) => setInput(e.target.value)}
+            />
           </div>
           <div className="console-box">
             <h2>Output</h2>
