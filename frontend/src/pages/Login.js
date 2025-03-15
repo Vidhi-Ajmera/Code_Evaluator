@@ -18,7 +18,7 @@ const LoginPage = () => {
 
     try {
       const response = await axios.post(
-        "https://code-evaluator-v-ajm.vercel.app/login",
+        `${process.env.REACT_APP_BACKEND_URL}/login`,
         {
           email,
           password,

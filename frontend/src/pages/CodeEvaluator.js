@@ -78,7 +78,7 @@ ChartJS.register(
   LineElement
 );
 
-const API_URL = "https://code-evaluator-v-ajm.vercel.app/submit_code"; // Ensure this matches your backend URL
+const API_URL = `${process.env.REACT_APP_BACKEND_URL}/submit_code`; // Ensure this matches your backend URL
 
 const languageOptions = [
   { label: "Python", value: "python" },

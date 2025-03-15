@@ -54,7 +54,7 @@ const SignUpPage = () => {
 
     try {
       const response = await axios.post(
-        "https://code-evaluator-v-ajm.vercel.app/signup",
+        `${process.env.REACT_APP_BACKEND_URL}/signup`,
         {
           username: email.split("@")[0],
           email: email,
