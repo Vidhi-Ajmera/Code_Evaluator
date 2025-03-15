@@ -89,6 +89,17 @@ class Code(BaseModel):
     assignment_id: Optional[str] = None
     previous_submissions: Optional[List[str]] = None
 
+# Helper Functions
+def hash_password(password: str) -> str:
+    # Generate a salt and hash the password
+    salt = bcrypt.gensalt()
+    hashed_password = bcrypt.hashpw(password.encode('utf-8'), salt)
+    return hashed_password.decode('utf-8')
+
+def verify_password(plain_password: str, hashed_password: str) -> bool:
+    # Verify the password against the hashed password
+    return bcrypt.checkpw(plain_password.encode('utf-8'), hashed_password.encode('utf-8'))
+
 # JWT Functions
 def create_access_token(data: dict, expires_delta: timedelta = None):
     to_encode = data.copy()
@@ -138,8 +149,12 @@ async def signup(user: User):
         if users_collection.find_one({"email": user.email}):
             raise HTTPException(status_code=400, detail="Email already registered")
         
-        # Insert new user
+        # Hash the password
+        hashed_password = hash_password(user.password)
+        
+        # Insert new user with hashed password
         user_data = user.dict()
+        user_data["password"] = hashed_password  # Replace plaintext password with hashed password
         user_data["created_at"] = datetime.utcnow()
         result = users_collection.insert_one(user_data)
         
@@ -162,8 +177,8 @@ async def signup(user: User):
 @app.post("/token")
 async def login_for_access_token(form_data: OAuth2PasswordRequestForm = Depends()):
     try:
-        db_user = users_collection.find_one({"email": form_data.username, "password": form_data.password})
-        if not db_user:
+        db_user = users_collection.find_one({"email": form_data.username})
+        if not db_user or not verify_password(form_data.password, db_user["password"]):
             raise HTTPException(
                 status_code=status.HTTP_401_UNAUTHORIZED,
                 detail="Incorrect email or password",
@@ -183,8 +198,8 @@ async def login_for_access_token(form_data: OAuth2PasswordRequestForm = Depends(
 @app.post("/login")
 async def login(user: LoginUser):
     try:
-        db_user = users_collection.find_one({"email": user.email, "password": user.password})
-        if not db_user:
+        db_user = users_collection.find_one({"email": user.email})
+        if not db_user or not verify_password(user.password, db_user["password"]):
             raise HTTPException(status_code=401, detail="Invalid credentials")
         
         access_token_expires = timedelta(minutes=ACCESS_TOKEN_EXPIRE_MINUTES)
