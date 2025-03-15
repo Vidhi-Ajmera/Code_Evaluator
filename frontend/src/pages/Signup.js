@@ -46,14 +46,11 @@ const SignUpPage = () => {
       return;
     }
 
-<<<<<<< HEAD
     if (password.length < 6) {
       setError("Password must be at least 6 characters long");
       return;
     }
 
-=======
->>>>>>> 53e9c81b9179dcb07954a4befcdb145cb7d51bfe
     setIsLoading(true);
 
     try {
@@ -171,21 +168,9 @@ const SignUpPage = () => {
                 />
               </div>
             </div>
-<<<<<<< HEAD
 
             <button type="submit" className="signup-btn" disabled={isLoading}>
               {isLoading ? "Signing Up..." : "Sign Up Now"}
-=======
-           <button
-                  type="submit"
-                  className={`signup-btn ${
-                  !isPasswordValid || password !== confirmPassword ? "disabled-btn" : ""
-                  }`}
-                  disabled={!isPasswordValid || password !== confirmPassword || isLoading}
-                  onClick={handleSubmit}
-                  >
-                  {isLoading ? "Signing Up..." : "Sign Up Now"}
->>>>>>> 53e9c81b9179dcb07954a4befcdb145cb7d51bfe
             </button>
 
             <p className="login-text">
