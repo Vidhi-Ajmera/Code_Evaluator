@@ -34,7 +34,8 @@ if MONGO_URI.endswith('/'):
     MONGO_URI = MONGO_URI[:-1]
 
 try:
-    client = MongoClient(MONGO_URI, connectTimeoutMS=30000, serverSelectionTimeoutMS=5000)
+    client = MongoClient(MONGO_URI, connectTimeoutMS=30000,socketTimeoutMS=30000, serverSelectionTimeoutMS=5000,retryWrites=True,
+        w="majority")
     client.admin.command('ping')
     db = client["coding_platform"]
     users_collection = db["users"]
