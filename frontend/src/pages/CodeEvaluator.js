@@ -55,6 +55,7 @@ import {
   FaCheckCircle,
   FaChartPie,
   FaList,
+  FaUndo,
 } from "react-icons/fa";
 import { oneDark } from "@codemirror/theme-one-dark";
 import "../styles/CodeEvaluator.css";
@@ -1124,50 +1125,53 @@ const CodeEvaluator = () => {
             </div>
           )}
           <div className="button-container">
-            <Button
-              className="reset-button"
-              onClick={handleReset}
-              variant="contained"
-              color="error"
-            >
-              <FaRedoAlt className="button-icon" />
-              <span>Reset</span>
-            </Button>
+            <div className="top-buttons">
+              <Button
+                className="reset-button"
+                onClick={handleReset}
+                disabled={loading}
+                variant="contained"
+                color="error"
+                startIcon={<FaUndo className="button-icon" />}
+              >
+                Reset
+              </Button>
 
-            <Tooltip
-              title="Shortcut: Cmd + Enter (Mac) / Ctrl + Enter (Windows)"
-              arrow
-            >
-              <span>
-                <Button
-                  className="analyze-button"
-                  onClick={handleAnalyze}
-                  disabled={loading}
-                  variant="contained"
-                  color="primary"
-                >
-                  {loading ? (
-                    <CircularProgress size={20} style={{ color: "white" }} />
-                  ) : (
-                    <>
-                      <FaBrain className="button-icon" />
-                      <span>Analyze Code</span>
-                    </>
-                  )}
-                </Button>
-              </span>
-            </Tooltip>
+              <Tooltip title="Analyze your code" placement="top">
+                <span>
+                  <Button
+                    className="analyze-button"
+                    onClick={handleAnalyze}
+                    disabled={loading}
+                    variant="contained"
+                    color="primary"
+                  >
+                    {loading ? (
+                      <CircularProgress size={20} style={{ color: "white" }} />
+                    ) : (
+                      <>
+                        <FaBrain className="button-icon" />
+                        <span>Analyze Code</span>
+                      </>
+                    )}
+                  </Button>
+                </span>
+              </Tooltip>
+            </div>
+
+            <div className="logout-container">
+              <Button
+                className="logout-button"
+                onClick={handleLogout}
+                variant="contained"
+                color="error"
+                startIcon={<FaSignOutAlt />}
+                fullWidth
+              >
+                Log Out
+              </Button>
+            </div>
           </div>
-
-          <Button
-            className="logout-button-main"
-            onClick={handleLogout}
-            variant="contained"
-            color="error"
-            startIcon={<FaSignOutAlt />}
-          >
-            Log Out
-          </Button>
           <Dialog
             open={logoutDialogOpen}
             onClose={() => setLogoutDialogOpen(false)}

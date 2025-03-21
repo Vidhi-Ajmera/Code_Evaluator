@@ -163,51 +163,74 @@ body {
 /* Button container with proper spacing and alignment */
 .button-container {
   display: flex;
-  justify-content: space-between;
-  align-items: center;
+  flex-direction: column;
   width: 100%;
-  margin-top: 10px;
-  gap: 15px;
+  gap: 12px;
+  margin: 20px 0;
 }
 
-.analyze-button, .reset-button {
+.top-buttons {
   display: flex;
-  align-items: center;
-  justify-content: center;
-  gap: 8px;
-  padding: 10px 20px;
-  border-radius: 8px;
-  font-weight: 500;
-  min-width: 150px;
-  transition: var(--transition);
-  cursor: pointer;
-  border: none;
-  text-transform: uppercase;
-  letter-spacing: 0.5px;
+  width: 100%;
+  gap: 12px;
 }
 
+/* Make the tooltip span take the same flex space as the reset button */
+.top-buttons > span {
+  flex: 1;
+  display: flex;
+}
+
+.analyze-button, .reset-button, .logout-button {
+  font-weight: 600 !important;
+  text-transform: uppercase !important;
+  letter-spacing: 0.5px !important;
+  padding: 10px 16px !important;
+  border-radius: 6px !important;
+  box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1) !important;
+  flex: 1;
+}
+
+/* For the analyze button specifically */
 .analyze-button {
-  background-color: var(--primary-color);
-  color: white;
-  flex-grow: 2;
+  background: linear-gradient(135deg, #4f46e5, #3b82f6) !important;
+  width: 100%; /* Ensures it fills the tooltip span */
 }
 
 .analyze-button:hover {
-  background-color: var(--primary-hover);
+  box-shadow: 0 4px 8px rgba(59, 130, 246, 0.3) !important;
+  transform: translateY(-2px);
 }
 
+/* For the reset button */
 .reset-button {
-  background-color: var(--error-color);
-  color: white;
-  flex-grow: 1;
+  background: linear-gradient(135deg, #ef4444, #f97316) !important;
 }
 
 .reset-button:hover {
-  background-color: #dc2626;
+  box-shadow: 0 4px 8px rgba(239, 68, 68, 0.3) !important;
+  transform: translateY(-2px);
+}
+
+/* For the logout button */
+.logout-button {
+  background: linear-gradient(135deg, #dc2626, #ef4444) !important;
+  width: 100%;
+}
+
+.logout-button:hover {
+  box-shadow: 0 4px 8px rgba(220, 38, 38, 0.3) !important;
+  transform: translateY(-2px);
 }
 
 .button-icon {
-  font-size: 16px;
+  font-size: 18px;
+  margin-right: 8px;
+}
+
+/* Transition for hover effects */
+.analyze-button, .reset-button, .logout-button {
+  transition: all 0.2s ease-in-out !important;
 }
 
 /* Theme toggle properly positioned */
