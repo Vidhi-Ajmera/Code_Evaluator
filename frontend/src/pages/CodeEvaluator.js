@@ -8,6 +8,8 @@ import React, {
 } from "react";
 import { useNavigate } from "react-router-dom";
 import axios from "axios";
+import { Info } from "lucide-react";
+
 import {
   Button,
   Typography,
@@ -82,6 +84,7 @@ ChartJS.register(
 const API_URL = `${process.env.REACT_APP_BACKEND_URL}/submit_code`; // Ensure this matches your backend URL
 
 const languageOptions = [
+  { label: "None", value: "none" }, // Added "None" as an option
   { label: "Python", value: "python" },
   { label: "JavaScript", value: "javascript" },
   { label: "Java", value: "java" },
@@ -89,10 +92,59 @@ const languageOptions = [
 ];
 
 const languageExtensions = {
+  none: [], // Use an empty array instead of null
   python: python(),
   javascript: javascript(),
   java: java(),
   cpp: cpp(),
+};
+
+const detectLanguage = (code) => {
+  const trimmedCode = code.trim();
+
+  if (
+    /#include\s*<.*?>/.test(trimmedCode) ||
+    /\busing\s+namespace\s+std;/.test(trimmedCode) ||
+    /\bint\s+main\s*\(/.test(trimmedCode) ||
+    /\bcout\s*<<\s*".*?"/.test(trimmedCode)
+  ) {
+    return "cpp";
+  }
+
+  if (
+    /\bpublic\s+class\b/.test(trimmedCode) ||
+    /\bimport\s+java\./.test(trimmedCode) ||
+    /\bSystem\.out\.println\(/.test(trimmedCode) ||
+    /\bpublic\s+(static\s+)?void\s+main\s*\(/.test(trimmedCode) ||
+    /@\w+/.test(trimmedCode)
+  ) {
+    return "java";
+  }
+
+  if (
+    /(^|\s)def\s+\w+\s*\(/.test(trimmedCode) ||
+    /(^|\s)class\s+\w+\s*(:|\()/i.test(trimmedCode) ||
+    /^\s*(import|from)\s+\w+/.test(trimmedCode) ||
+    /print\s*\(.+?\)/.test(trimmedCode) ||
+    /\bif\s+_name\s*==\s*['"]main_['"]/.test(trimmedCode)
+  ) {
+    return "python";
+  }
+
+  if (
+    /\b(console\.log|alert|document\.querySelector|window\.addEventListener)\(/.test(
+      trimmedCode
+    ) ||
+    /\b(const|let|var)\s+\w+\s*=/.test(trimmedCode) ||
+    /\bfunction\s+\w+\s*\(/.test(trimmedCode) ||
+    /\basync\s+function\s+\w+\s*\(/.test(trimmedCode) ||
+    /\bexport\s+(default\s+)?\w+/.test(trimmedCode) ||
+    /\bimport\s+[\w{}\s,*]+\s+from\s+['"].+['"];/.test(trimmedCode)
+  ) {
+    return "javascript";
+  }
+
+  return "";
 };
 
 const CodeEvaluator = () => {
@@ -105,13 +157,12 @@ const CodeEvaluator = () => {
   const [darkMode, setDarkMode] = useState(
     () => localStorage.getItem("darkMode") === "true"
   );
-  const [language, setLanguage] = useState("");
+  const [language, setLanguage] = useState("none"); // Default to JavaScript
   const [alertOpen, setAlertOpen] = useState(false);
   const [alertMessage, setAlertMessage] = useState("");
   const [alertSeverity, setAlertSeverity] = useState("info");
   const [logoutDialogOpen, setLogoutDialogOpen] = useState(false);
   const reportRef = useRef(null);
-  // const editorRef = useRef(null); // Removed unused editorRef
 
   const fetchProtectedData = async () => {
     const token = localStorage.getItem("authToken");
@@ -305,15 +356,28 @@ const CodeEvaluator = () => {
     navigate("/");
   };
 
+  // Fixed code: Improved language detection with default fallback
   const handleCodeChange = (value) => {
-    if (!language) {
-      setAlertMessage("Please select a language first!");
-      setAlertSeverity("warning");
-      setAlertOpen(true);
-      return;
-    }
     setCode(value);
+
+    // Only attempt to detect language if there's actual code to analyze
+    if (value.trim()) {
+      const detectedLang = detectLanguage(value);
+      if (detectedLang) {
+        setLanguage(detectedLang);
+      }
+    }
   };
+
+  // Real-time language detection as user types
+  useEffect(() => {
+    if (code.trim()) {
+      const detectedLang = detectLanguage(code);
+      if (detectedLang && detectedLang !== language) {
+        setLanguage(detectedLang);
+      }
+    }
+  }, [code, language]);
 
   const prepareMetricsChartData = () => {
     if (!analysisResult?.evaluation_metrics) return null;
@@ -1014,40 +1078,29 @@ const CodeEvaluator = () => {
           style={{ color: darkMode ? "#60a5fa" : "#6b7280" }}
         />
       </div>
-      <div
-        className="language-selector"
-        style={{
-          position: "absolute",
-          top: "8px",
-          left: "8px",
-          zIndex: 10,
-        }}
-      >
-        <Select
-          value={language}
-          onChange={(e) => setLanguage(e.target.value)}
-          variant="outlined"
-          size="small"
-          displayEmpty
-          className="language-dropdown"
-          style={{
-            fontSize: "0.85rem",
-            padding: "3px 8px",
-            borderRadius: "8px",
-            background: darkMode ? "#333" : "white",
-            color: darkMode ? "white" : "black",
-          }}
-        >
-          <MenuItem value="" disabled>
-            Select Language
-          </MenuItem>
-          {languageOptions.map((lang) => (
-            <MenuItem key={lang.value} value={lang.value}>
-              {lang.label}
-            </MenuItem>
-          ))}
-        </Select>
+      <div className="language-display" style={{ display: "inline-block" }}>
+        {language ? (
+          `Detected language: ${
+            language === "cpp"
+              ? "C++"
+              : language.charAt(0).toUpperCase() + language.slice(1)
+          }`
+        ) : (
+          <span>
+            <CircularProgress size={18} style={{ color: "beige" }} />
+            {code.trim() ? "Detecting Language..." : "No code entered"}
+          </span>
+        )}
+
+        {/* Tooltip positioned below */}
+        <div className="tooltip-container" style={{ marginLeft: "8px" }}>
+          <Info size={16} />
+          <div className="tooltip-text">
+            This platform only supports C++, Java, JavaScript, Python.
+          </div>
+        </div>
       </div>
+
       {/* Apply dark-theme class to the container */}
       <div className={`container ${darkMode ? "dark-theme" : "light-theme"}`}>
         <Typography
