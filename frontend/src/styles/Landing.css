@@ -144,9 +144,9 @@ nav {
   position: relative;
   text-align: center;
   padding: 130px 20px;
-  margin-top: 8%;
+  /* margin-top: 4%; */
   margin-bottom: 6%;
-  color: beige;
+  color: rgb(0, 0, 0);
   height: 75vh; 
   overflow: hidden;
 }
