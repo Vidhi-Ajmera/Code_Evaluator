@@ -97,10 +97,9 @@ const LandingPage = () => {
 
   return (
     <div className="landing-container">
-      {/* Navbar */}
       <nav className="lgo-nav">
         <div className="nav-image" id="main">
-          <FontAwesomeIcon icon={faCode} className="text-4xl" />{" "}
+          <FontAwesomeIcon icon={faCode} className="gradient-icon text-4xl" />
           <h4 onClick={scrollToTop}>CodeIQ.ai</h4>
         </div>
 
@@ -208,14 +207,14 @@ const LandingPage = () => {
           textAlign: "center",
           fontSize: "2.5rem",
           color: "rgb(188, 188, 191)",
-          marginBottom: "-50px",
+          marginBottom: "30px",
         }}
       >
         Key Features
       </h2>
       <div className="mid-section">
         <div className="video-container">
-          <video autoPlay loop muted playsInline width="90%" height="90%">
+          <video autoPlay loop muted playsInline width="100%" height="90%">
             <source src={TestPlatformVideo} type="video/mp4" />
             Your browser does not support the video tag.
           </video>
@@ -383,7 +382,7 @@ const LandingPage = () => {
                 Gold Certified Cloud Productivity Partner of Microsoft
               </span>
               , we are dedicated to unlocking the full potential of your
-              organization’s digital transformation journey.
+              organization's digital transformation journey.
             </p>
             <div className="more-info">
               <p>For more information, visit our official website:</p>

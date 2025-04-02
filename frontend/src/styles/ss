@@ -7,16 +7,10 @@
 body {
   margin: 0;
   padding: 0;
-  box-sizing: border-box;
-  overflow-x: hidden;
   background-color: #0f0f0f !important;
   color: rgb(207, 207, 204) !important;
 }
 
-.landing-container{
-  background-color: #0f0f0f;
-
-}
 nav {
   background-color: rgba(0, 0, 0, 0.7);
   backdrop-filter: blur(3px);
@@ -26,7 +20,7 @@ nav {
   justify-content: space-between;
   padding: 16px 40px;
   z-index: 9;
-  position: relative;
+  position: fixed;
   top: 0;
   left: 0;
   width: 100%;
