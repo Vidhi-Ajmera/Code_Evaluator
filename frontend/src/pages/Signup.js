@@ -18,10 +18,10 @@ const SignUpPage = () => {
   // Redirect if user is already logged in
   useEffect(() => {
     const token = localStorage.getItem("authToken");
-    if (token) {
-      navigate("/", { replace: true });
+    if (token && token !== "null" && token !== "undefined") {
+      navigate("/");
     }
-  }, [navigate]);
+  }, []);
 
   // Password rules checking for enabling/disabling submit button
   const isPasswordValid =
@@ -45,11 +45,6 @@ const SignUpPage = () => {
       return;
     }
 
-    if (password.length < 6) {
-      setError("Password must be at least 6 characters long");
-      return;
-    }
-
     setIsLoading(true);
 
     try {
@@ -62,9 +57,9 @@ const SignUpPage = () => {
         }
       );
 
-      console.log("API Response:", response.data); // Check backend response
+      console.log("API Response:", response.data);
 
-      if (response.data) {
+      if (response.data && response.data.access_token) {
         const { access_token, username } = response.data;
 
         localStorage.setItem("authToken", access_token);
@@ -77,21 +72,18 @@ const SignUpPage = () => {
           })
         );
 
-        await new Promise((resolve) => setTimeout(resolve, 500));
+        await new Promise((resolve) => setTimeout(resolve, 500)); // Wait to ensure token is set
+
+        console.log("Navigating to homepage...");
         navigate("/", { replace: true });
       } else {
         setError("Signup successful, but no token received. Please log in.");
       }
     } catch (err) {
       console.error("Signup error:", err);
-
-      if (err.response) {
-        setError(
-          err.response.data.detail || "Signup failed. Please try again."
-        );
-      } else {
-        setError("Network error. Please try again later.");
-      }
+      setError(
+        err.response?.data?.detail || "Signup failed. Please try again."
+      );
     } finally {
       setIsLoading(false);
     }

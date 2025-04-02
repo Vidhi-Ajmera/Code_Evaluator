@@ -14,9 +14,12 @@ import {
   FaInstagram,
   FaYoutube,
 } from "react-icons/fa6";
+import { faArrowUpRightFromSquare } from "@fortawesome/free-solid-svg-icons";
+import { getAuth, signInWithPopup, GoogleAuthProvider } from "firebase/auth";
 import { FaLightbulb, FaCommentDots, FaBrain } from "react-icons/fa";
 import { faCode } from "@fortawesome/free-solid-svg-icons";
 import TestPlatformVideo from "../../src/assests/Test_PlatForm.mp4";
+import MeridianVideo from "../../src/assests/Meridian_video.mp4";
 import meredianCertified from "../assests/meridian-certfied.png";
 import indianFlag from "../assests/india-flag.png";
 import MeridianLogo from "../assests/Meridian_logo.png";
@@ -26,10 +29,13 @@ import uaeFlag from "../assests/uae-flag.svg";
 import usFlag from "../assests/us-flag.png";
 
 const LandingPage = () => {
+  const auth = getAuth();
   const navigate = useNavigate();
-  const [isAuthenticated, setIsAuthenticated] = useState(false);
-  const [showPopup, setShowPopup] = useState(false);
+  const provider = new GoogleAuthProvider();
   const [username, setUsername] = useState("");
+  const [showPopup, setShowPopup] = useState(false);
+  const [profileImage, setProfileImage] = useState("");
+  const [isAuthenticated, setIsAuthenticated] = useState(false);
 
   useEffect(() => {
     const token = localStorage.getItem("authToken");
@@ -66,6 +72,22 @@ const LandingPage = () => {
         () => navigate("/login", { state: { redirectTo: path } }),
         1200
       );
+    }
+  };
+
+  const handleGoogleLogin = async () => {
+    try {
+      const result = await signInWithPopup(auth, provider);
+      const { displayName, photoURL } = result.user;
+
+      localStorage.setItem("username", displayName);
+      localStorage.setItem("profileImage", photoURL);
+
+      setUsername(displayName);
+      setProfileImage(photoURL);
+      setIsAuthenticated(true);
+    } catch (error) {
+      console.error("Error during Google sign-in:", error.message);
     }
   };
 
@@ -131,78 +153,50 @@ const LandingPage = () => {
       {/* Rest of the component remains unchanged */}
       {/* Hero Section */}
       <header className="hero-section" id="main">
-        <h1 className="hero-title">AI-Based Code Evaluator</h1>
-        <p className="hero-subtitle">
-          Get AI-powered feedback, plagiarism checking, and code validation
-          instantly.
-        </p>
+        <video
+          autoPlay
+          loop
+          muted
+          className="hero-video"
+          onLoadedMetadata={(e) => (e.target.playbackRate = 1.1)}
+        >
+          <source src={MeridianVideo} type="video/mp4" />
+          Your browser does not support the video tag.
+        </video>
+        <div className="hero-content">
+          <h1 className="hero-title">AI-Based Code Evaluator</h1>
+          <p className="hero-subtitle">
+            Create coding contests to test your skills <br /> Receive AI-powered
+            feedback, plagiarism detection, and code validation.
+          </p>
+        </div>
       </header>
 
       {/* Platform Selection Boxes */}
       <div className="platform-container">
-        <div
-          className="platform-box"
-          onClick={() => handleNavigation("/test-platform")}
-          style={{
-            cursor: "pointer",
-            opacity: isAuthenticated ? 1 : 0.8,
-          }}
-        >
-          <h3>Test Platform</h3>
-          <p
-            style={{
-              display: "flex",
-              alignItems: "center",
-              gap: "10px",
-              flexWrap: "wrap",
-            }}
+        <div className="platform-box-first">
+          <button
+            className="explore-button"
+            onClick={() => handleNavigation("/contest")}
           >
-            <span style={{ display: "flex", alignItems: "center", gap: "5px" }}>
-              <FaCheckCircle style={{ color: "rgb(215, 211, 211)" }} /> Solve
-              problem statements
-            </span>
-            <span style={{ display: "flex", alignItems: "center", gap: "5px" }}>
-              <FaRegPlayCircle style={{ color: "rgb(215, 211, 211)" }} /> Run
-              code against test cases
-            </span>
-            <span style={{ display: "flex", alignItems: "center", gap: "5px" }}>
-              <FaTachometerAlt style={{ color: "rgb(215, 211, 211)" }} />{" "}
-              Validate performance
-            </span>
-          </p>
+            Coding Contest
+            <FontAwesomeIcon
+              icon={faArrowUpRightFromSquare}
+              style={{ marginLeft: "8px" }}
+            />
+          </button>
         </div>
-
-        <div
-          className="platform-box"
-          onClick={() => handleNavigation("/code-evaluator")}
-          style={{
-            cursor: "pointer",
-            opacity: isAuthenticated ? 1 : 0.8,
-          }}
-        >
-          <h3>Learning & Practice Platform</h3>
-          <p
-            style={{
-              display: "flex",
-              alignItems: "center",
-              gap: "10px",
-              flexWrap: "wrap",
-            }}
+        <div className="platform-box">
+          <button
+            className="explore-button"
+            onClick={() => handleNavigation("/code-evaluator")}
           >
-            <span style={{ display: "flex", alignItems: "center", gap: "5px" }}>
-              <FaLightbulb style={{ color: "rgb(215, 211, 211)" }} />{" "}
-              AI-generated hints
-            </span>
-            <br />
-            <span style={{ display: "flex", alignItems: "center", gap: "5px" }}>
-              <FaCommentDots style={{ color: "rgb(215, 211, 211)" }} />{" "}
-              Personalized feedback
-            </span>
-            <span style={{ display: "flex", alignItems: "center", gap: "5px" }}>
-              <FaBrain style={{ color: "rgb(215, 211, 211)" }} /> Improve coding
-              skills
-            </span>
-          </p>
+            Code Evaluator
+            <FontAwesomeIcon
+              icon={faArrowUpRightFromSquare}
+              style={{ marginLeft: "8px" }}
+            />
+          </button>
         </div>
       </div>
 

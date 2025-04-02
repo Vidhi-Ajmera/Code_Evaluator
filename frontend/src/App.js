@@ -10,6 +10,9 @@ import Login from "./pages/Login";
 import Signup from "./pages/Signup";
 import CodeEvaluator from "./pages/CodeEvaluator";
 import TestEvaluator from "./pages/TestEvaluator";
+import Contest from "./pages/Contest";
+import Customized from "./pages/Customized";
+import DifficultySelection from "./pages/Difficulty";
 
 function App() {
   const isAuthenticated = () => {
@@ -26,6 +29,9 @@ function App() {
         <Route path="/signup" element={<Signup />} />
         <Route path="/code-evaluator" element={<CodeEvaluator />} />
         <Route path="/test-platform" element={<TestEvaluator />} />
+        <Route path="/contest" element={<Contest />} />
+        <Route path="/customized" element={<Customized />} />
+        <Route path="/difficulty" element={<DifficultySelection />} />
       </Routes>
     </Router>
   );

@@ -35,6 +35,50 @@ const CodeEvaluator = () => {
   const lastZoomLevel = useRef(window.devicePixelRatio);
   const [logoutDialogOpen, setLogoutDialogOpen] = useState(false);
 
+  // Add these inside your component
+  const [problems] = useState([
+    {
+      title: "Subset Sum Problem",
+      description: [
+        "Take an input N, a number. Take N more inputs and store that in an array. Take an input target, a number.",
+        "a. Write a recursive function which prints subsets of the array which sum to target.",
+        "b. Write a recursive function which counts the number of subsets of the array which sum to target. Print the value returned.",
+      ],
+      sampleInput: "3\n1\n2\n3\n3",
+      sampleOutput: "1 2 3\n2",
+    },
+    {
+      title: "Palindrome Check",
+      description: [
+        "Take a string input and check whether it is a palindrome or not.",
+        "Print 'YES' if palindrome else 'NO'.",
+      ],
+      sampleInput: "racecar",
+      sampleOutput: "YES",
+    },
+    {
+      title: "Fibonacci Series",
+      description: [
+        "Take an input N and print the first N numbers of Fibonacci series.",
+      ],
+      sampleInput: "5",
+      sampleOutput: "0 1 1 2 3",
+    },
+    {
+      title: "Factorial Calculation",
+      description: ["Take an input N and calculate the factorial of N."],
+      sampleInput: "4",
+      sampleOutput: "24",
+    },
+  ]);
+
+  const [currentProblemIndex, setCurrentProblemIndex] = useState(0);
+
+  // Automatically set input when problem changes
+  useEffect(() => {
+    setInput(problems[currentProblemIndex].sampleInput);
+  }, [currentProblemIndex, problems]);
+
   const toggleTheme = () => {
     setDarkMode((prevMode) => !prevMode);
     setTheme((prevTheme) => (prevTheme === "vs-dark" ? "light" : "vs-dark"));
@@ -126,16 +170,32 @@ const CodeEvaluator = () => {
     setTime(0);
     setIsTimerRunning(false);
   };
-
   const handleRun = () => {
     alert("Code executed successfully");
     setOutput("1 2  3\n2");
   };
 
+  const totalProblems = problems.length;
+  const [isCompleted, setIsCompleted] = useState(false);
+  const completedProblems = isCompleted ? totalProblems : currentProblemIndex;
+  const progressPercentage = Math.round(
+    (completedProblems / totalProblems) * 100
+  );
+
   const handleSubmit = () => {
     alert("Code submitted successfully");
-    setTime(0);
-    setIsTimerRunning(false);
+
+    if (currentProblemIndex < problems.length - 1) {
+      setCurrentProblemIndex((prevIndex) => prevIndex + 1);
+      setCode("// Write your code here\n");
+      setOutput("");
+      setTime(0);
+      setIsTimerRunning(false);
+    } else {
+      alert("Congratulations! You have completed all the problems.");
+      setIsCompleted(true);
+      setIsTimerRunning(false);
+    }
   };
 
   const toggleTimer = () => {
@@ -155,24 +215,20 @@ const CodeEvaluator = () => {
     >
       <div className="left-panel">
         <h1>Problem Description</h1>
-        <h3>Subset Sum Problem</h3>
-        <p>
-          Take an input N, a number. Take N more inputs and store that in an
-          array. Take an input target, a number.
-        </p>
-        <p>
-          a. Write a recursive function which prints subsets of the array which
-          sum to target.
-        </p>
-        <p>
-          b. Write a recursive function which counts the number of subsets of
-          the array which sum to target. Print the value returned.
-        </p>
-
+        <h3 style={{ color: "black" }}>
+          {problems[currentProblemIndex].title}
+        </h3>
+        {problems[currentProblemIndex].description.map((desc, index) => (
+          <p key={index}>{desc}</p>
+        ))}
         <h2>Sample Input:</h2>
-        <pre className="example-box">3\n1\n2\n3\n3</pre>
+        <pre className="example-box">
+          {problems[currentProblemIndex].sampleInput}
+        </pre>
         <h2>Sample Output:</h2>
-        <pre className="example-box">1 2 3\n2</pre>
+        <pre className="example-box">
+          {problems[currentProblemIndex].sampleOutput}
+        </pre>
 
         <Button className="logout-button-main" onClick={handleLogout}>
           <FaSignOutAlt /> Log Out
@@ -215,6 +271,27 @@ const CodeEvaluator = () => {
             <option value="c">C</option>
             <option value="cpp">C++</option>
           </select>
+
+          <div className="progress-card">
+            <div className="progress-header">
+              <span>
+                <strong>Done:</strong> {completedProblems}/{totalProblems}
+              </span>
+              <span>
+                <strong>{progressPercentage}%</strong>
+              </span>
+            </div>
+            <div
+              className={`progress-bar ${
+                progressPercentage === 100 ? "complete" : ""
+              }`}
+            >
+              <div style={{ width: `${progressPercentage}%` }}></div>
+            </div>
+            {progressPercentage === 100 && (
+              <span className="completed-text">🎉 All problems completed!</span>
+            )}
+          </div>
 
           <div className="controls">
             <div className="theme-toggle">
