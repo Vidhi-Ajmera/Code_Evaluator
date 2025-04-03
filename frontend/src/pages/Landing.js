@@ -99,7 +99,11 @@ const LandingPage = () => {
     <div className="landing-container">
       <nav className="lgo-nav">
         <div className="nav-image" id="main">
-          <FontAwesomeIcon icon={faCode} className="gradient-icon text-4xl" />
+          <FontAwesomeIcon
+            icon={faCode}
+            className="gradient-icon text-4xl"
+            style={{ color: "#b07ed1" }}
+          />
           <h4 onClick={scrollToTop}>CodeIQ.ai</h4>
         </div>
 
