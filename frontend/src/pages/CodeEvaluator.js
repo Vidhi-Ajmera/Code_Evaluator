@@ -47,6 +47,7 @@ import {
 import { Pie, Radar } from "react-chartjs-2"; // Removed Bar
 
 import {
+  FaArrowLeft,
   FaCode,
   FaBrain,
   FaRedoAlt,
@@ -343,17 +344,13 @@ const CodeEvaluator = () => {
     setCode("");
     setAnalysisResult(null);
   };
-
-  const handleLogout = () => {
+  const handleBack = () => {
     setLogoutDialogOpen(true);
   };
 
-  const confirmLogout = () => {
-    localStorage.removeItem("authToken");
-    localStorage.removeItem("userInfo");
-    setIsAuthenticated(false);
-    setUsername("");
-    navigate("/");
+  const confirmBack = () => {
+    setLogoutDialogOpen(false);
+    navigate(-1);
   };
 
   // Fixed code: Improved language detection with default fallback
@@ -1215,13 +1212,13 @@ const CodeEvaluator = () => {
             <div className="logout-container">
               <Button
                 className="logout-button"
-                onClick={handleLogout}
+                onClick={handleBack} // Changed function from handleLogout to handleBack
                 variant="contained"
                 color="error"
-                startIcon={<FaSignOutAlt />}
+                startIcon={<FaArrowLeft />} // Changed icon to a back arrow
                 fullWidth
               >
-                Log Out
+                Go Back
               </Button>
             </div>
           </div>
@@ -1235,27 +1232,28 @@ const CodeEvaluator = () => {
               },
             }}
           >
-            <DialogTitle>Confirm Logout</DialogTitle>
+            <DialogTitle>Go Back Confirmation</DialogTitle>{" "}
+            {/* Updated title */}
             <DialogContent>
               <DialogContentText
                 sx={{ color: darkMode ? "#e2e8f0" : "inherit" }}
               >
-                Are you sure you want to log out?
+                ↩ Are you sure you want to go back?{" "}
+                {/* Added left arrow curving in emoji */}
               </DialogContentText>
             </DialogContent>
             <DialogActions>
               <Button onClick={() => setLogoutDialogOpen(false)}>Cancel</Button>
               <Button
-                onClick={confirmLogout}
+                onClick={confirmBack} // Changed function from confirmLogout to confirmBack
                 color="error"
                 variant="contained"
-                className="logout-button"
+                className="logout-button" // Kept className unchanged
               >
-                Log Out
+                Go Back {/* Updated button text */}
               </Button>
             </DialogActions>
           </Dialog>
-
           <Snackbar
             open={alertOpen}
             autoHideDuration={3000}
