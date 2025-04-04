@@ -43,53 +43,92 @@ const LoginPage = () => {
     }
   };
 
-  const handleGoogleLogin = async () => {
-    try {
-
-      await setPersistence(auth, browserLocalPersistence);
+  // const handleGoogleLogin = async () => {
+  //   try {
       
-      const result = await signInWithPopup(auth, provider);
-      const user = result.user;
+  //     const result = await signInWithPopup(auth, provider);
+  //     const user = result.user;
 
-      console.log("User logged in:", user);
-      localStorage.setItem("authToken", user.access_token); // FIXED: Correct Token Key
-      localStorage.setItem("userInfo", JSON.stringify({ email: user.email })); // Save Google User Info
-      alert(`Welcome ${user.displayName}!`);
-      navigate("/");
-    } catch (error) {
-      console.error("Error during Google login:", error);
+  //     console.log("User logged in:", user);
+  //     localStorage.setItem("authToken", user.access_token); // FIXED: Correct Token Key
+  //     localStorage.setItem("userInfo", JSON.stringify({ email: user.email })); // Save Google User Info
+  //     alert(`Welcome ${user.displayName}!`);
+  //     navigate("/");
+  //   } catch (error) {
+  //     console.error("Error during Google login:", error);
 
-      if (error.code === "auth/user-not-found") {
-        alert("User not registered. Please sign up first.");
-      } else if (error.code === "auth/popup-closed-by-user") {
-        alert("Login popup was closed before completing.");
-      } else if (error.code === "auth/network-request-failed") {
-        alert("Network error. Please check your internet connection.");
-      } else {
-        alert("Login failed. Please try again.");
-      }
-    }
-  };
+  //     if (error.code === "auth/user-not-found") {
+  //       alert("User not registered. Please sign up first.");
+  //     } else if (error.code === "auth/popup-closed-by-user") {
+  //       alert("Login popup was closed before completing.");
+  //     } else if (error.code === "auth/network-request-failed") {
+  //       alert("Network error. Please check your internet connection.");
+  //     } else {
+  //       alert("Login failed. Please try again.");
+  //     }
+  //   }
+  // };
 
-  const handleForgotPassword = async () => {
-    if (!email) {
-      alert("Please enter your email to reset password.");
-      return;
+  // const handleForgotPassword = async () => {
+  //   if (!email) {
+  //     alert("Please enter your email to reset password.");
+  //     return;
+  //   }
+  //   try {
+  //     await sendPasswordResetEmail(auth, email);
+  //     alert("Password reset email sent! Please check your inbox.");
+  //   } catch (error) {
+  //     console.error("Error sending password reset email:", error);
+  //     if (error.code === "auth/user-not-found") {
+  //       alert("No user found with this email.");
+  //     } else if (error.code === "auth/invalid-email") {
+  //       alert("Invalid email address.");
+  //     } else {
+  //       alert("Failed to send password reset email. Please try again.");
+  //     }
+  //   }
+  // };
+
+  const handleGoogleLogin = async () => {
+  try {
+    // Ensure persistence so session doesn't reset
+    await setPersistence(auth, browserLocalPersistence);
+
+    const result = await signInWithPopup(auth, provider);
+    const user = result.user;
+
+    // ✅ Get proper Firebase ID token
+    const token = await user.getIdToken();
+
+    // ✅ Save token and user details
+    localStorage.setItem("authToken", token);
+    localStorage.setItem(
+      "userInfo",
+      JSON.stringify({
+        name: user.displayName,
+        email: user.email,
+        photoURL: user.photoURL,
+        uid: user.uid,
+      })
+    );
+
+    alert(`Welcome ${user.displayName}!`);
+    navigate("/");
+  } catch (error) {
+    console.error("Error during Google login:", error);
+
+    if (error.code === "auth/user-not-found") {
+      alert("User not registered. Please sign up first.");
+    } else if (error.code === "auth/popup-closed-by-user") {
+      alert("Login popup was closed before completing.");
+    } else if (error.code === "auth/network-request-failed") {
+      alert("Network error. Please check your internet connection.");
+    } else {
+      alert("Login failed. Please try again.");
     }
-    try {
-      await sendPasswordResetEmail(auth, email);
-      alert("Password reset email sent! Please check your inbox.");
-    } catch (error) {
-      console.error("Error sending password reset email:", error);
-      if (error.code === "auth/user-not-found") {
-        alert("No user found with this email.");
-      } else if (error.code === "auth/invalid-email") {
-        alert("Invalid email address.");
-      } else {
-        alert("Failed to send password reset email. Please try again.");
-      }
-    }
-  };
+  }
+};
+
 
   return (
     <div className="login-container">
