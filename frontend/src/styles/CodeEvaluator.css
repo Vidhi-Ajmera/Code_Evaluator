@@ -78,7 +78,7 @@ body {
 /* Fix for editor container */
 .editor-container {
   width: 100%;
-  height: 250px;
+  height: 60vh;    /*change made for height */
   border-radius: 8px;
   overflow: hidden;
   border: 1px solid var(--light-border);
@@ -115,6 +115,7 @@ body {
   width: 100% !important;
   font-family: 'Fira Code', monospace;
   transition: var(--transition);
+  text-align: left;    /*change made for text alignment */
 }
 
 .dark-theme .cm-editor {
