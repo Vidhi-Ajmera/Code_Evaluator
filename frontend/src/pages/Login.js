@@ -43,70 +43,30 @@ const LoginPage = () => {
     }
   };
 
-  // const handleGoogleLogin = async () => {
-  //   try {
-  //     const result = await signInWithPopup(auth, provider);
-  //     const user = result.user;
+  const handleGoogleLogin = async () => {
+    try {
+      const result = await signInWithPopup(auth, provider);
+      const user = result.user;
 
-  //     console.log("User logged in:", user);
-  //     localStorage.setItem("authToken", user.access_token); // FIXED: Correct Token Key
-  //     localStorage.setItem("userInfo", JSON.stringify({ email: user.email })); // Save Google User Info
-  //     alert(`Welcome ${user.displayName}!`);
-  //     navigate("/");
-  //   } catch (error) {
-  //     console.error("Error during Google login:", error);
+      console.log("User logged in:", user);
+      localStorage.setItem("authToken", user.access_token); // FIXED: Correct Token Key
+      localStorage.setItem("userInfo", JSON.stringify({ email: user.email })); // Save Google User Info
+      alert(`Welcome ${user.displayName}!`);
+      navigate("/");
+    } catch (error) {
+      console.error("Error during Google login:", error);
 
-  //     if (error.code === "auth/user-not-found") {
-  //       alert("User not registered. Please sign up first.");
-  //     } else if (error.code === "auth/popup-closed-by-user") {
-  //       alert("Login popup was closed before completing.");
-  //     } else if (error.code === "auth/network-request-failed") {
-  //       alert("Network error. Please check your internet connection.");
-  //     } else {
-  //       alert("Login failed. Please try again.");
-  //     }
-  //   }
-  // };
-
-const handleGoogleLogin = async () => {
-  try {
-    // Optional: Make session persistent across tabs/browser restarts
-    await setPersistence(auth, browserLocalPersistence);
-
-    const result = await signInWithPopup(auth, provider);
-    const user = result.user;
-
-    // Get Firebase ID token
-    const token = await user.getIdToken();
-
-    // Save user info and token to localStorage
-    localStorage.setItem("authToken", token);
-    localStorage.setItem(
-      "userInfo",
-      JSON.stringify({
-        name: user.displayName,
-        email: user.email,
-        photoURL: user.photoURL,
-        uid: user.uid,
-      })
-    );
-
-    alert(`Welcome ${user.displayName}!`);
-    navigate("/"); // ✅ Redirect to home or wherever you want
-  } catch (error) {
-    console.error("Google login failed:", error);
-
-    if (error.code === "auth/popup-closed-by-user") {
-      alert("Login popup was closed. Please try again.");
-    } else if (error.code === "auth/network-request-failed") {
-      alert("Network error. Please check your internet connection.");
-    } else {
-      alert(`Google login failed: ${error.message}`);
+      if (error.code === "auth/user-not-found") {
+        alert("User not registered. Please sign up first.");
+      } else if (error.code === "auth/popup-closed-by-user") {
+        alert("Login popup was closed before completing.");
+      } else if (error.code === "auth/network-request-failed") {
+        alert("Network error. Please check your internet connection.");
+      } else {
+        alert("Login failed. Please try again.");
+      }
     }
-  }
-};
-
-
+  };
 
   const handleForgotPassword = async () => {
     if (!email) {
