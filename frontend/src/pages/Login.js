@@ -92,16 +92,16 @@ const handleGoogleLogin = async () => {
     alert(`Welcome ${user.displayName}!`);
     navigate("/"); // ✅ Use the already-declared navigate here
   } catch (error) {
-    console.error("Google login failed:", error);
+  console.error("Google login failed:", error);
 
-    if (error.code === "auth/popup-closed-by-user") {
-      alert("Login popup was closed. Please try again.");
-    } else if (error.code === "auth/network-request-failed") {
-      alert("Network error. Please check your internet connection.");
-    } else {
-      alert("Google login failed. Please try again.");
-    }
+  if (error.code === "auth/popup-closed-by-user") {
+    alert("Login popup was closed. Please try again.");
+  } else if (error.code === "auth/network-request-failed") {
+    alert("Network error. Please check your internet connection.");
+  } else {
+    alert(`Google login failed: ${error.message}`); // 👈 UPDATED LINE
   }
+}
 };
 
 
