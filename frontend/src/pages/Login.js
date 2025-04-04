@@ -68,16 +68,18 @@ const LoginPage = () => {
   //   }
   // };
 
-
 const handleGoogleLogin = async () => {
   try {
+    // Optional: Make session persistent across tabs/browser restarts
+    await setPersistence(auth, browserLocalPersistence);
+
     const result = await signInWithPopup(auth, provider);
     const user = result.user;
 
     // Get Firebase ID token
     const token = await user.getIdToken();
 
-    // Save user details to localStorage
+    // Save user info and token to localStorage
     localStorage.setItem("authToken", token);
     localStorage.setItem(
       "userInfo",
@@ -90,18 +92,18 @@ const handleGoogleLogin = async () => {
     );
 
     alert(`Welcome ${user.displayName}!`);
-    navigate("/"); // ✅ Use the already-declared navigate here
+    navigate("/"); // ✅ Redirect to home or wherever you want
   } catch (error) {
-  console.error("Google login failed:", error);
+    console.error("Google login failed:", error);
 
-  if (error.code === "auth/popup-closed-by-user") {
-    alert("Login popup was closed. Please try again.");
-  } else if (error.code === "auth/network-request-failed") {
-    alert("Network error. Please check your internet connection.");
-  } else {
-    alert(`Google login failed: ${error.message}`); // 👈 UPDATED LINE
+    if (error.code === "auth/popup-closed-by-user") {
+      alert("Login popup was closed. Please try again.");
+    } else if (error.code === "auth/network-request-failed") {
+      alert("Network error. Please check your internet connection.");
+    } else {
+      alert(`Google login failed: ${error.message}`);
+    }
   }
-}
 };
 
 
