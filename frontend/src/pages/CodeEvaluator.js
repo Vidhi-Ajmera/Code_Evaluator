@@ -1232,7 +1232,7 @@ const CodeEvaluator = () => {
               },
             }}
           >
-            <DialogTitle>Go Back Confirmation</DialogTitle>{" "}
+            <DialogTitle sx={{ color: darkMode ? "#e2e8f0" : "inherit" }}>Go Back Confirmation</DialogTitle>{" "}
             {/* Updated title */}
             <DialogContent>
               <DialogContentText
