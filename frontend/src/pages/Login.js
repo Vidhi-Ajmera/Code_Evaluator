@@ -69,43 +69,42 @@ const LoginPage = () => {
   // };
 
 
-  const handleGoogleLogin = async () => {
+ const handleGoogleLogin = async () => {
+  const navigate = useNavigate(); // Ensure this is used inside a React component
+
   try {
     const result = await signInWithPopup(auth, provider);
     const user = result.user;
-    const token = await user.getIdToken(); // ✅ Get Firebase ID token correctly
 
-    console.log("User logged in:", user);
+    // Get Firebase token
+    const token = await user.getIdToken();
 
-    // Store token and user info
+    // Store user info in localStorage
     localStorage.setItem("authToken", token);
-    localStorage.setItem("userInfo", JSON.stringify({ 
-      email: user.email, 
-      name: user.displayName 
-    }));
+    localStorage.setItem(
+      "userInfo",
+      JSON.stringify({
+        name: user.displayName,
+        email: user.email,
+        photoURL: user.photoURL,
+        uid: user.uid,
+      })
+    );
 
-    // Show welcome Snackbar
-    setSnackbarMessage(`Welcome ${user.displayName}!`);
-    setSnackbarSeverity("success");
-    setSnackbarOpen(true);
+    alert(`Welcome ${user.displayName}!`);
 
-    // Optional: Navigate to home or dashboard
+    // Navigate to home
     navigate("/");
   } catch (error) {
-    console.error("Error during Google login:", error);
+    console.error("Google login failed:", error);
 
-    let errorMsg = "Login failed. Please try again.";
-    if (error.code === "auth/user-not-found") {
-      errorMsg = "User not registered. Please sign up first.";
-    } else if (error.code === "auth/popup-closed-by-user") {
-      errorMsg = "Login popup was closed before completing.";
+    if (error.code === "auth/popup-closed-by-user") {
+      alert("Login popup was closed. Please try again.");
     } else if (error.code === "auth/network-request-failed") {
-      errorMsg = "Network error. Please check your internet connection.";
+      alert("Network error. Please check your internet connection.");
+    } else {
+      alert("Google login failed. Please try again.");
     }
-
-    setSnackbarMessage(errorMsg);
-    setSnackbarSeverity("error");
-    setSnackbarOpen(true);
   }
 };
 
