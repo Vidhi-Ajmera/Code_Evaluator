@@ -45,6 +45,9 @@ const LoginPage = () => {
 
   const handleGoogleLogin = async () => {
     try {
+
+      await setPersistence(auth, browserLocalPersistence);
+      
       const result = await signInWithPopup(auth, provider);
       const user = result.user;
 
