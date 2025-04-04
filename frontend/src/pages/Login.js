@@ -2,8 +2,7 @@ import React, { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { DotLottieReact } from "@lottiefiles/dotlottie-react";
 import axios from "axios";
-import { auth, provider } from "../components/firebase";
-import { signInWithPopup } from "firebase/auth";
+import { auth, provider, signInWithPopup } from "../components/firebase";
 import { sendPasswordResetEmail } from "firebase/auth";
 import "../../src/styles/Login.css";
 import { FaCode } from "react-icons/fa";
@@ -70,17 +69,15 @@ const LoginPage = () => {
   // };
 
 
- const handleGoogleLogin = async () => {
-  const navigate = useNavigate(); // Ensure this is used inside a React component
-
+const handleGoogleLogin = async () => {
   try {
     const result = await signInWithPopup(auth, provider);
     const user = result.user;
 
-    // Get Firebase token
+    // Get Firebase ID token
     const token = await user.getIdToken();
 
-    // Store user info in localStorage
+    // Save user details to localStorage
     localStorage.setItem("authToken", token);
     localStorage.setItem(
       "userInfo",
@@ -93,9 +90,7 @@ const LoginPage = () => {
     );
 
     alert(`Welcome ${user.displayName}!`);
-
-    // Navigate to home
-    navigate("/");
+    navigate("/"); // ✅ Use the already-declared navigate here
   } catch (error) {
     console.error("Google login failed:", error);
 
@@ -108,6 +103,7 @@ const LoginPage = () => {
     }
   }
 };
+
 
 
   const handleForgotPassword = async () => {
