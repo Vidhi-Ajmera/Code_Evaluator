@@ -134,7 +134,7 @@ const LandingPage = () => {
                   localStorage.removeItem("userInfo");
                   setIsAuthenticated(false);
                   setUsername("");
-                  navigate("/login");
+                  // navigate("/login");
                 }}
               >
                 Log Out
