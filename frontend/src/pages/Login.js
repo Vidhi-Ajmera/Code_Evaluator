@@ -89,28 +89,22 @@ const LoginPage = () => {
   //   }
   // };
 
-  const handleGoogleLogin = async () => {
+const handleGoogleLogin = async () => {
   try {
-    // Ensure persistence so session doesn't reset
     await setPersistence(auth, browserLocalPersistence);
-
     const result = await signInWithPopup(auth, provider);
     const user = result.user;
-
-    // ✅ Get proper Firebase ID token
     const token = await user.getIdToken();
 
-    // ✅ Save token and user details
-    localStorage.setItem("authToken", token);
-    localStorage.setItem(
-      "userInfo",
-      JSON.stringify({
+    if (typeof window !== "undefined") {
+      localStorage.setItem("authToken", token);
+      localStorage.setItem("userInfo", JSON.stringify({
         name: user.displayName,
         email: user.email,
         photoURL: user.photoURL,
         uid: user.uid,
-      })
-    );
+      }));
+    }
 
     alert(`Welcome ${user.displayName}!`);
     navigate("/");
@@ -128,7 +122,6 @@ const LoginPage = () => {
     }
   }
 };
-
 
   return (
     <div className="login-container">
