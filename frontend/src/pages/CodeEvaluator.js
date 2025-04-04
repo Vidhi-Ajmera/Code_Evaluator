@@ -1232,11 +1232,11 @@ const CodeEvaluator = () => {
               },
             }}
           >
-            <DialogTitle sx={{ color: darkMode ? "#e2e8f0" : "inherit" }}>Go Back Confirmation</DialogTitle>{" "}
+            <DialogTitle sx={{ color: darkMode ? "#e2e8f0" : "#000000" }}>Go Back Confirmation</DialogTitle>{" "}
             {/* Updated title */}
             <DialogContent>
               <DialogContentText
-                sx={{ color: darkMode ? "#e2e8f0" : "inherit" }}
+                sx={{ color: darkMode ? "#e2e8f0" : "#000000" }}
               >
                 ↩ Are you sure you want to go back?{" "}
                 {/* Added left arrow curving in emoji */}
