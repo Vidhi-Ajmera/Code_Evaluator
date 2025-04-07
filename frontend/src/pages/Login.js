@@ -43,31 +43,64 @@ const LoginPage = () => {
     }
   };
 
-  const handleGoogleLogin = async () => {
-    try {
+  // const handleGoogleLogin = async () => {
+  //   try {
       
-      const result = await signInWithPopup(auth, provider);
-      const user = result.user;
+  //     const result = await signInWithPopup(auth, provider);
+  //     const user = result.user;
 
-      console.log("User logged in:", user);
-      localStorage.setItem("authToken", user.access_token); // FIXED: Correct Token Key
-      localStorage.setItem("userInfo", JSON.stringify({ email: user.email })); // Save Google User Info
-      alert(`Welcome ${user.displayName}!`);
-      navigate("/");
-    } catch (error) {
-      console.error("Error during Google login:", error);
+  //     console.log("User logged in:", user);
+  //     localStorage.setItem("authToken", user.access_token); // FIXED: Correct Token Key
+  //     localStorage.setItem("userInfo", JSON.stringify({ email: user.email })); // Save Google User Info
+  //     alert(`Welcome ${user.displayName}!`);
+  //     navigate("/");
+  //   } catch (error) {
+  //     console.error("Error during Google login:", error);
 
-      if (error.code === "auth/user-not-found") {
-        alert("User not registered. Please sign up first.");
-      } else if (error.code === "auth/popup-closed-by-user") {
-        alert("Login popup was closed before completing.");
-      } else if (error.code === "auth/network-request-failed") {
-        alert("Network error. Please check your internet connection.");
-      } else {
-        alert("Login failed. Please try again.");
-      }
+  //     if (error.code === "auth/user-not-found") {
+  //       alert("User not registered. Please sign up first.");
+  //     } else if (error.code === "auth/popup-closed-by-user") {
+  //       alert("Login popup was closed before completing.");
+  //     } else if (error.code === "auth/network-request-failed") {
+  //       alert("Network error. Please check your internet connection.");
+  //     } else {
+  //       alert("Login failed. Please try again.");
+  //     }
+  //   }
+  // };
+
+  const handleGoogleLogin = async () => {
+  try {
+    const result = await signInWithPopup(auth, provider);
+    const user = result.user;
+
+    // Get Firebase ID token (JWT)
+    const token = await user.getIdToken();
+
+    console.log("User logged in:", user);
+    console.log("Google Login Token:", token);
+
+    // Store in localStorage
+    localStorage.setItem("authToken", token);
+    localStorage.setItem("userInfo", JSON.stringify({ email: user.email }));
+
+    alert(`Welcome ${user.displayName}!`);
+    navigate("/");
+  } catch (error) {
+    console.error("Error during Google login:", error);
+
+    if (error.code === "auth/user-not-found") {
+      alert("User not registered. Please sign up first.");
+    } else if (error.code === "auth/popup-closed-by-user") {
+      alert("Login popup was closed before completing.");
+    } else if (error.code === "auth/network-request-failed") {
+      alert("Network error. Please check your internet connection.");
+    } else {
+      alert("Login failed. Please try again.");
     }
-  };
+  }
+};
+
 
   const handleForgotPassword = async () => {
     if (!email) {
