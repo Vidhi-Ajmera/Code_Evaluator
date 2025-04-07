@@ -12,6 +12,7 @@ const LoginPage = () => {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [showPassword, setShowPassword] = useState(false);
+  const [isGoogleLoading, setIsGoogleLoading] = useState(false); // ✅ Prevent multiple popups
 
   const handleSubmit = async (e) => {
     e.preventDefault();
@@ -70,28 +71,29 @@ const LoginPage = () => {
   // };
 
   const handleGoogleLogin = async () => {
-  try {
-    const result = await signInWithPopup(auth, provider);
-    const user = result.user;
+    if (isGoogleLoading) return;
+    setIsGoogleLoading(true);
 
-    // Get Firebase ID token (JWT)
-    const token = await user.getIdToken();
+    try {
+      const result = await signInWithPopup(auth, provider);
+      const user = result.user;
+      const token = await user.getIdToken(); // ✅ Secure token from Firebase
 
-    console.log("User logged in:", user);
-    console.log("Google Login Token:", token);
+      console.log("Google User:", user);
+      console.log("Google Token:", token);
 
-    // Store in localStorage
-    localStorage.setItem("authToken", token);
-    localStorage.setItem("userInfo", JSON.stringify({ email: user.email }));
+      localStorage.setItem("authToken", token);
+      localStorage.setItem("userInfo", JSON.stringify({ email: user.email }));
 
-    alert(`Welcome ${user.displayName}!`);
-    navigate("/");
-  }catch (error) {
-  console.error("Error during Google login:", error);
-  alert(`Login failed. Code: ${error.code}, Message: ${error.message}`);
-  }
-};
-
+      alert(`Welcome ${user.displayName}!`);
+      navigate("/");
+    } catch (error) {
+      console.error("Google Login Error:", error);
+      alert(`Login failed. Code: ${error.code}\nMessage: ${error.message}`);
+    } finally {
+      setIsGoogleLoading(false);
+    }
+  };
 
   const handleForgotPassword = async () => {
     if (!email) {
@@ -180,18 +182,35 @@ const LoginPage = () => {
               <span>OR</span>
             </div>
 
-            <div className="login-buttons">
+            // <div className="login-buttons">
+            //   <button
+            //     type="button"
+            //     className="google-login-btn"
+            //     onClick={handleGoogleLogin}
+            //     disabled={isGoogleLoading}
+            //   >
+            //     <img
+            //       src="https://lh3.googleusercontent.com/COxitqgJr1sJnIDe8-jiKhxDx1FrYbtRHKJ9z_hELisAlapwE9LUPh6fcXIfb5vwpbMl4xl9H9TRFPc5NOO8Sb3VSgIBrfRYvW6cUA"
+            //       alt="Google Logo"
+            //       className="google-logo"
+            //     />
+            //     Login with Google
+            //     {isGoogleLoading ? "Signing in..." : "Login with Google"}
+            //   </button>
+            // </div>
+                  <div className="login-buttons">
               <button
                 type="button"
                 className="google-login-btn"
                 onClick={handleGoogleLogin}
+                disabled={isGoogleLoading}
               >
                 <img
                   src="https://lh3.googleusercontent.com/COxitqgJr1sJnIDe8-jiKhxDx1FrYbtRHKJ9z_hELisAlapwE9LUPh6fcXIfb5vwpbMl4xl9H9TRFPc5NOO8Sb3VSgIBrfRYvW6cUA"
                   alt="Google Logo"
                   className="google-logo"
                 />
-                Login with Google
+                {isGoogleLoading ? "Signing in..." : "Login with Google"}
               </button>
             </div>
             <p className="register-text">
