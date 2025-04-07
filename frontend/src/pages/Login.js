@@ -86,18 +86,9 @@ const LoginPage = () => {
 
     alert(`Welcome ${user.displayName}!`);
     navigate("/");
-  } catch (error) {
-    console.error("Error during Google login:", error);
-
-    if (error.code === "auth/user-not-found") {
-      alert("User not registered. Please sign up first.");
-    } else if (error.code === "auth/popup-closed-by-user") {
-      alert("Login popup was closed before completing.");
-    } else if (error.code === "auth/network-request-failed") {
-      alert("Network error. Please check your internet connection.");
-    } else {
-      alert("Login failed. Please try again.");
-    }
+  }catch (error) {
+  console.error("Error during Google login:", error);
+  alert(`Login failed. Code: ${error.code}, Message: ${error.message}`);
   }
 };
 
