@@ -64,14 +64,14 @@ npm start
 
 ## 🔧 Usage  
 
-### 🎯 **For Evaluators (Admin Panel)**  
+### 🎯 **For Evaluators**  
 1️⃣ **Login** as an evaluator.  
 2️⃣ **Create** a new coding contest by specifying the number of questions.  
 3️⃣ **Define** problem statements, test cases, and scoring criteria.  
 4️⃣ **Share** the contest link with participants.  
 5️⃣ **Monitor submissions**, view results, and analyze participant performance.  
 
-### 🎯 **For Participants (Contestants)**  
+### 🎯 **For Participants**  
 1️⃣ **Sign up** and join an active contest.  
 2️⃣ **Select** a problem statement and write your code.  
 3️⃣ **Submit** your solution for evaluation.  
