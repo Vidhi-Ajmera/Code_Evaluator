@@ -18,7 +18,7 @@ const LoginPage = () => {
 
     try {
       const response = await axios.post(
-        ${process.env.REACT_APP_BACKEND_URL}/login,
+        `${process.env.REACT_APP_BACKEND_URL}/login`,
         {
           email,
           password,
@@ -52,7 +52,7 @@ const LoginPage = () => {
       console.log("User logged in:", user);
       localStorage.setItem("authToken", user.access_token); // FIXED: Correct Token Key
       localStorage.setItem("userInfo", JSON.stringify({ email: user.email })); // Save Google User Info
-      alert(Welcome ${user.displayName}!);
+      alert(`Welcome ${user.displayName}!`);
       navigate("/");
     } catch (error) {
       console.error("Error during Google login:", error);
@@ -128,6 +128,7 @@ const LoginPage = () => {
                   onChange={(e) => setPassword(e.target.value)}
                   required
                 />
+                
                 <button
                   type="button"
                   className="toggle-password"
