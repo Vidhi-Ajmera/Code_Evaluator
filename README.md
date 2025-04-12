@@ -196,7 +196,7 @@ cd Code_Evaluator
 
 ### 2️⃣ Backend Setup (Python + FastAPI)  
 ```bash
-cd backend
+cd be
 pip install -r requirements.txt
 python main.py
 ```
@@ -215,7 +215,7 @@ npm start
 ```
 Code_Evaluator/
 │
-├── backend/              # AI evaluation engine (FastAPI)
+├── be/              # AI evaluation engine (FastAPI)
 │   ├── models/           # ML models for correctness & plagiarism
 │   ├── routes/           # API endpoints
 │   ├── main.py           # Backend entry point
