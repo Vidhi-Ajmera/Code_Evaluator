@@ -120,7 +120,6 @@ Code_Evaluator/
 
 
 --- -->
-
 # 🚀 Code Evaluator  
 
 🔍 **AI-Powered Code Evaluation & Learning Platform**  
@@ -141,7 +140,11 @@ A quick and efficient space where users can **paste or write code**, and the pla
   - 📛 **Plagiarism Detection** – Check if the code is copied.
   - 🌍 **Source Tracing** – Show where the code might be copied from.
   - 💡 **Improvement Suggestions** – Learn how to write better code.
-  - 🧮 **Scoring System** – Get a numerical score for each submission.
+  - 🧮 **Confidence Score** – Get a numerical score for each submission.
+  - 🔍 **Code Quality Metrics** – Assessment of the code's efficiency, security, readability, and overall quality.
+  - ⚠️ **Suspicious Elements** – Highlight any areas of concern in the code.
+  - 📝 **Detailed Evaluation** – Thorough analysis of correctness, efficiency, security, and readability, with explanations.
+  - 🛠️ **Improvement Recommendations** – AI-generated tips on how to enhance code quality, efficiency, and security.
 
 #### 🔹 **2. Coding Platform for Educators & Learners (Future Scope)**
 A dedicated portal for structured learning and evaluation:
@@ -166,6 +169,9 @@ A dedicated portal for structured learning and evaluation:
   - 🔍 Plagiarism percentage and source
   - 💬 Suggestions for improvement
   - 🧠 Final score and report insights
+  - 🔑 Detailed code quality metrics (efficiency, security, readability)
+  - ⚠️ Identifying suspicious or problematic elements in the code
+  - 📝 In-depth analysis of code correctness, efficiency, and overall quality
 
 ---
 
