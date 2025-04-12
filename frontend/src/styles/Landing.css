@@ -147,8 +147,9 @@ nav {
   /* margin-top: 4%; */
   margin-bottom: 10%;
   color: rgb(0, 0, 0);
-  height: 75vh; 
+  height: 100vh; 
   overflow: hidden;
+  z-index: 0;
 }
 
 @keyframes zoomFadeIn {
@@ -161,7 +162,7 @@ nav {
     opacity: 0.65;
   }
 }
-
+/*
 .hero-video {
   position: absolute;
   top: 0;
@@ -169,10 +170,25 @@ nav {
   width: 100%;
   height: 150%;
   object-fit: cover;
-  margin-top: 2%;     /* title margin  */
+  margin-top: 2%;     
   z-index: 1;
   animation: zoomFadeIn 1.9s ease-out forwards;
   
+  mask-image: linear-gradient(to bottom, rgba(0, 0, 0, 1) 70%, rgba(0, 0, 0, 0.4) 85%, rgba(0, 0, 0, 0) 100%);
+  -webkit-mask-image: linear-gradient(to bottom, rgba(0, 0, 0, 1) 70%, rgba(0, 0, 0, 0.4) 85%, rgba(0, 0, 0, 0) 100%);
+}
+*/
+
+.hero-video {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100vh; /* Full viewport height */
+  object-fit: cover;
+  z-index: 1;
+  animation: zoomFadeIn 1.9s ease-out forwards;
+
   mask-image: linear-gradient(to bottom, rgba(0, 0, 0, 1) 70%, rgba(0, 0, 0, 0.4) 85%, rgba(0, 0, 0, 0) 100%);
   -webkit-mask-image: linear-gradient(to bottom, rgba(0, 0, 0, 1) 70%, rgba(0, 0, 0, 0.4) 85%, rgba(0, 0, 0, 0) 100%);
 }
@@ -213,13 +229,24 @@ nav {
   margin-bottom: 20px;
 }
 
-.platform-container {
+/* .platform-container {
   display: flex;
   justify-content: center;
   align-items: center;
   gap: 14%;
   margin-top: -15%;
   margin-bottom: 10%;
+} */
+
+.platform-container {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  gap: 14%;
+  margin-top: -50vh;   /* Reduced top spacing */
+  margin-bottom: 25vh; /* Adjust if needed */
+  position: relative;
+  z-index: 2; /* Ensure it's above the video */
 }
 
 
@@ -399,20 +426,25 @@ nav {
 }
 
 .about-text {
+  margin-right: 80px;
   margin-bottom: 1rem;
+  margin-top: 1.5rem;
   font-weight: 100;
   color: rgb(204, 204, 202);
   line-height: 1.6;
+  text-align: justify;
 }
 
 .more-info {
-  text-align: center;
+  text-align: left;
 }
 
 .more-info p{
   color: rgb(213, 213, 211);
   font-size: 18px;
+  margin-top: 20px;
 }
+
 
 .cta-button {
   display: inline-block;

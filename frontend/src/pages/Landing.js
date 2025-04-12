@@ -272,12 +272,12 @@ const LandingPage = () => {
       </div>
 
       {/* How It Works Section */}
-      <section className="steps-section" id="how-to-use">
+      {/* <section className="steps-section" id="how-to-use">
         <h1 className="section-title">How It Works</h1>
-        <div className="how-it-works-container">
-          {/* Left Panel - Test Platform */}
-          <div className="how-it-works-panel test-platform">
-            <h3>Test Platform</h3>
+        <div className="how-it-works-container"> */}
+      {/* Left Panel - Test Platform */}
+      {/* <div className="how-it-works-panel test-platform">
+            <h3>Coding Platform</h3>
             <ol className="steps-list">
               <li>
                 <span>
@@ -312,11 +312,11 @@ const LandingPage = () => {
                 </p>
               </li>
             </ol>
-          </div>
+          </div> */}
 
-          {/* Right Panel - Learning & Practice */}
-          <div className="how-it-works-panel practice-platform">
-            <h3>Learning & Practice Platform</h3>
+      {/* Right Panel - Learning & Practice */}
+      {/* <div className="how-it-works-panel practice-platform">
+            <h3>Code Evaluator Platform</h3>
             <ol className="steps-list">
               <li>
                 <span>
@@ -349,9 +349,84 @@ const LandingPage = () => {
             </ol>
           </div>
         </div>
+      </section> */}
+
+      {/* How It Works Section */}
+      <section className="steps-section" id="how-to-use">
+        <h1 className="section-title">How It Works</h1>
+        <div className="how-it-works-container">
+          {/* Left Panel - Coding Platform */}
+          <div className="how-it-works-panel test-platform">
+            <h3>Coding Platform</h3>
+            <ol className="steps-list">
+              <li>
+                <span>
+                  <strong>Login as Teacher or Student</strong>
+                </span>
+                <p>Teachers upload, students solve topic-based problems.</p>
+              </li>
+              <li>
+                <span>
+                  <strong>View & Attempt Questions</strong>
+                </span>
+                <p>Students access relevant problems to solve.</p>
+              </li>
+              <li>
+                <span>
+                  <strong>Submit & Track Status</strong>
+                </span>
+                <p>See real-time progress and submission results.</p>
+              </li>
+              <li>
+                <span>
+                  <strong>Dashboard Insights</strong>
+                </span>
+                <p>Monitor uploads, attempts, and achievements.</p>
+              </li>
+            </ol>
+          </div>
+
+          {/* Right Panel - Code Evaluator Platform */}
+          <div className="how-it-works-panel practice-platform">
+            <h3>Code Evaluator Platform</h3>
+            <ol className="steps-list">
+              <li>
+                <span>
+                  <strong>Language Auto-Detection</strong>
+                </span>
+                <p>Paste code, we detect the language.</p>
+              </li>
+              <li>
+                <span>
+                  <strong>Light & Dark Themes</strong>
+                </span>
+                <p>Switch between coding themes easily.</p>
+              </li>
+              <li>
+                <span>
+                  <strong>One-Click Evaluation</strong>
+                </span>
+                <p>Run code and generate AI reports.</p>
+              </li>
+              <li>
+                <span>
+                  <strong>Instant Output View</strong>
+                </span>
+                <p>See real-time output right below your code.</p>
+              </li>
+
+              <li>
+                <span>
+                  <strong>AI Suggestions</strong>
+                </span>
+                <p>Improve with hints, tips, and feedback.</p>
+              </li>
+            </ol>
+          </div>
+        </div>
       </section>
 
-      <section className="about-section" id="about">
+      {/* <section className="about-section" id="about">
         <h2 className="section-title">About Meridian</h2>
         <div className="about-container">
           <div className="about-media">
@@ -401,7 +476,45 @@ const LandingPage = () => {
             </div>
           </div>
         </div>
+      </section> */}
+
+      <section className="about-section" id="about">
+        <h2 className="section-title">About Meridian</h2>
+        <div className="about-container">
+          <div className="about-media">
+            <img
+              src={meredianCertified}
+              alt="About Meridian"
+              className="img-fluid"
+            />
+          </div>
+          <div className="about-content">
+            <p className="about-text">
+              <span className="about-highlight">Meridian Solutions</span> delivers trusted cloud and security services to over{" "}
+              <span className="about-highlight">1,400 global clients</span>. With expertise across healthcare, telecom, manufacturing, and government sectors, we provide scalable solutions that meet evolving business demands.
+            </p>
+            <p className="about-text">
+              In partnership with global leaders, we offer a full suite of{" "}
+              <span className="about-highlight">cloud applications, security tools,</span> and managed services. As a{" "}
+              <span className="about-highlight">Tier 1 Cloud Solutions Partner</span> and{" "}
+              <span className="about-highlight">Microsoft Gold Partner</span>, we drive impactful digital transformation.
+            </p>
+            <div className="more-info">
+              <p>Learn more on our official website:</p>
+              <a
+                href="https://onmeridian.com/"
+                target="_blank"
+                rel="noopener noreferrer"
+                className="cta-button"
+              >
+                Meridian Solutions Pvt. Ltd.
+              </a>
+            </div>
+          </div>
+        </div>
       </section>
+
+
 
       <section className="contact-section" id="contact">
         <h2 className="section-title" style={{ marginBottom: "4px" }}>
